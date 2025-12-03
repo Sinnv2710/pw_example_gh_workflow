@@ -13,7 +13,6 @@
         "allowSyntheticDefaultImports": true,
         "allowJs": true,
         "esModuleInterop": true,
-        // "strict": true,
         "forceConsistentCasingInFileNames": true,
         "noImplicitAny": false,
         "removeComments": true,
@@ -22,13 +21,12 @@
         "noEmit": true,
         "inlineSourceMap": true,
         "moduleResolution": "node",
-        "types": [
-            "*",
-        ],
+        "ignoreDeprecations": "6.0",
+        "types": [],
         "plugins": [
             {
                 "name": "typescript-tslint-plugin"
             }
-        ]
+        ],
     },
 }

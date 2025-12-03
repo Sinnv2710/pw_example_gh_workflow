@@ -17,6 +17,7 @@
     "@codeceptjs/configure": "^0.8.0",
     "@codeceptjs/helper": "^1.0.2",
     "@faker-js/faker": "^5.5.3",
+    "@playwright/test": "^1.57.0",
     "@types/chai": "^4.3.0",
     "@types/faker": "^5.5.9",
     "@types/mocha": "^9.0.0",
