@@ -22,7 +22,7 @@
         "inlineSourceMap": true,
         "moduleResolution": "node",
         "ignoreDeprecations": "6.0",
-        "types": [],
+        "types": ["node"],
         "plugins": [
             {
                 "name": "typescript-tslint-plugin"

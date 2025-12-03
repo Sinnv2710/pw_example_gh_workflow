@@ -1,0 +1,12 @@
+{
+	"servers": {
+		"playwright": {
+			"command": "bunx",
+			"args": [
+				"@playwright/mcp@latest"
+			],
+			"type": "stdio"
+		}
+	},
+	"inputs": []
+}
