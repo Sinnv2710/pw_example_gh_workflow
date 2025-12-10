@@ -1,0 +1,79 @@
+Test Case ID,Test Case Title,Priority,Risk Category,Automation Status,Test Type,Assigned To,Planned Date,Execution Date,Status,Pass/Fail,Execution Time (s),Tester,Environment,Build/Version,Precondition Met,Expected Result,Actual Result,Defect ID,Notes,Retest Required,Retest Date,Retest Status,Blocker for Release
+TC-BL-001,End-to-End Agent Workflow,🔴 Blocker,CP,✅ Automated,Integration,,,,Not Run,,,,,,Complete workflow from problem to PR,,,,NO,,,YES
+TC-BL-002,Custom Agent Parameter Validation,🔴 Blocker,CP,✅ Automated,Functional,,,,Not Run,,,,,,All parameters validated correctly,,,,NO,,,YES
+TC-BL-003,Security Credential Handling,🔴 Blocker,SEC,✅ Automated,Security,,,,Not Run,,,,,,No credentials exposed in logs/commits/PRs,,,,NO,,,YES
+TC-BL-004,Performance Baseline,🔴 Blocker,PERF,✅ Automated,Performance,,,,Not Run,,,,,,P95 < 30s for simple operations,,,,NO,,,YES
+TC-CA-001,Agent Discovery,🟡 High,CP,✅ Automated,Functional,,,,Not Run,,,,,,All custom agents discovered,,,,NO,,,NO
+TC-CA-002,Agent Configuration,🟡 High,CP,✅ Automated,Functional,,,,Not Run,,,,,,Configuration persists and validates,,,,NO,,,NO
+TC-CA-003,Agent Lifecycle,🟡 High,CP,✅ Automated,Functional,,,,Not Run,,,,,,"Proper init, execution, cleanup",,,,NO,,,NO
+TC-PS-001,Minimal Problem Statement,🟡 High,CP,✅ Automated,Functional,,,,Not Run,,,,,,Agent asks clarifying questions,,,,NO,,,NO
+TC-PS-002,Detailed Problem Statement,🟡 High,CP,✅ Automated,Functional,,,,Not Run,,,,,,All requirements parsed and plan created,,,,NO,,,NO
+TC-PS-003,Ambiguous Problem Statement,🟡 High,CP,✅ Automated,Functional,,,,Not Run,,,,,,Agent requests clarification,,,,NO,,,NO
+TC-PS-004,Multi-Phase Problem Statement,🟢 Medium,EC,🟨 Partial,Functional,,,,Not Run,,,,,,"Completes Phase 1 only, waits for approval",,,,NO,,,NO
+TC-IM-001,Single Image Processing,🟢 Medium,CP,✅ Automated,Functional,,,,Not Run,,,,,,Image analyzed and requirements extracted,,,,NO,,,NO
+TC-IM-002,Multiple Images Reverse Order,🟠 Critical,CP,✅ Automated,Functional,,,,Not Run,,,,,,Newest image processed first,,,,NO,,,NO
+TC-IM-003,Unsupported Image Format,🟢 Medium,EC,✅ Automated,Negative,,,,Not Run,,,,,,Graceful error with conversion suggestion,,,,NO,,,NO
+TC-IM-004,Large Image Handling,🟢 Medium,PERF,✅ Automated,Performance,,,,Not Run,,,,,,Processes without crash or clear size error,,,,NO,,,NO
+TC-IM-005,Corrupted Image,🟢 Medium,EC,✅ Automated,Negative,,,,Not Run,,,,,,Error detected and handled gracefully,,,,NO,,,NO
+TC-RI-001,Automatic Repository Detection,🟡 High,CP,✅ Automated,Functional,,,,Not Run,,,,,,Correct repo inferred from context,,,,NO,,,NO
+TC-RI-002,Multiple Repository Ambiguity,🟡 High,CP,✅ Automated,Functional,,,,Not Run,,,,,,Agent asks for clarification,,,,NO,,,NO
+TC-RI-003,Repository Access Validation,🟠 Critical,SEC,✅ Automated,Security,,,,Not Run,,,,,,Permissions checked before operations,,,,NO,,,NO
+TC-FA-001,File Creation,🟠 Critical,CP,✅ Automated,Functional,,,,Not Run,,,,,,File created with correct content,,,,NO,,,NO
+TC-FA-002,File Modification,🟠 Critical,CP,✅ Automated,Functional,,,,Not Run,,,,,,Changes applied without unintended modifications,,,,NO,,,NO
+TC-FA-003,File Deletion,🟡 High,CP,✅ Automated,Functional,,,,Not Run,,,,,,"Confirmation required, file deleted",,,,NO,,,NO
+TC-FA-004,Directory Operations,🟡 High,CP,✅ Automated,Functional,,,,Not Run,,,,,,All directory operations succeed,,,,NO,,,NO
+TC-FA-005,File Rename,🟢 Medium,CP,✅ Automated,Functional,,,,Not Run,,,,,,"File renamed, git tracks rename",,,,NO,,,NO
+TC-FA-006,Batch Operations,🟢 Medium,CP,✅ Automated,Functional,,,,Not Run,,,,,,"Atomic operation, rollback on failure",,,,NO,,,NO
+TC-FA-007,Large File Handling,🟢 Medium,PERF,✅ Automated,Performance,,,,Not Run,,,,,,Handles gracefully or warns about size,,,,NO,,,NO
+TC-FA-008,Binary File Operations,🟢 Medium,CP,✅ Automated,Functional,,,,Not Run,,,,,,Binary files handled correctly,,,,NO,,,NO
+TC-PR-001,Basic PR Creation,🟠 Critical,CP,✅ Automated,Integration,,,,Not Run,,,,,,PR created with proper metadata,,,,NO,,,NO
+TC-PR-002,PR Description Generation,🟡 High,CP,✅ Automated,Functional,,,,Not Run,,,,,,Complete PR description generated,,,,NO,,,NO
+TC-PR-003,Draft PR Creation,🟢 Medium,CP,✅ Automated,Functional,,,,Not Run,,,,,,Draft created and convertible,,,,NO,,,NO
+TC-PR-004,PR with Reviewers,🟢 Medium,CP,✅ Automated,Functional,,,,Not Run,,,,,,"Reviewers assigned, notifications sent",,,,NO,,,NO
+TC-PR-005,PR Labels and Milestones,🟢 Medium,CP,✅ Automated,Functional,,,,Not Run,,,,,,Labels and milestone correctly set,,,,NO,,,NO
+TC-CS-001,Merge Conflict Detection,🟠 Critical,CP,✅ Automated,Negative,,,,Not Run,,,,,,Conflict detected with clear error,,,,NO,,,NO
+TC-CS-002,Merge Conflict Resolution,�� High,CP,🟨 Partial,Functional,,,,Not Run,,,,,,"Options presented, resolution applied",,,,NO,,,NO
+TC-CS-003,Dirty Working Tree,🟡 High,CP,✅ Automated,Functional,,,,Not Run,,,,,,Warning issued with options,,,,NO,,,NO
+TC-CS-004,Concurrent Operations,🟢 Medium,EC,✅ Automated,Functional,,,,Not Run,,,,,,Operations serialized or rejected,,,,NO,,,NO
+TC-CS-005,State Recovery After Failure,🟡 High,CP,✅ Automated,Resilience,,,,Not Run,,,,,,Clean state on restart,,,,NO,,,NO
+TC-CS-006,Branch State Validation,🟢 Medium,CP,✅ Automated,Functional,,,,Not Run,,,,,,Correct branch info and sync status,,,,NO,,,NO
+TC-SC-001,Authentication Token Security,🔴 Blocker,SEC,✅ Automated,Security,,,,Not Run,,,,,,Token never exposed,,,,NO,,,YES
+TC-SC-002,Secret Scanning Prevention,🟠 Critical,SEC,✅ Automated,Security,,,,Not Run,,,,,,Commits with secrets rejected,,,,NO,,,NO
+TC-SC-003,Code Injection Prevention,🟠 Critical,SEC,✅ Automated,Security,,,,Not Run,,,,,,"Input sanitized, no command execution",,,,NO,,,NO
+TC-SC-004,Path Traversal Protection,🟠 Critical,SEC,✅ Automated,Security,,,,Not Run,,,,,,"Path validated, traversal rejected",,,,NO,,,NO
+TC-SC-005,SQL Injection Prevention,🟠 Critical,SEC,✅ Automated,Security,,,,Not Run,,,,,,"Input sanitized, parameterized queries",,,,NO,,,NO
+TC-SC-006,XSS Prevention in Generated Code,🟡 High,SEC,✅ Automated,Security,,,,Not Run,,,,,,"Output escaped, no XSS vectors",,,,NO,,,NO
+TC-SC-007,Dependency Vulnerability Scanning,🟡 High,SEC,✅ Automated,Security,,,,Not Run,,,,,,Vulnerabilities detected and reported,,,,NO,,,NO
+TC-SC-008,RBAC Permission Enforcement,🟡 High,SEC,✅ Automated,Security,,,,Not Run,,,,,,Unauthorized operations blocked,,,,NO,,,NO
+TC-PE-001,Small Change Performance,🟡 High,PERF,✅ Automated,Performance,,,,Not Run,,,,,,P95 < 15s for 1-10 line changes,,,,NO,,,NO
+TC-PE-002,Medium Refactoring Performance,🟡 High,PERF,✅ Automated,Performance,,,,Not Run,,,,,,P95 < 60s for 100-500 line changes,,,,NO,,,NO
+TC-PE-003,Large Repository Performance,🟢 Medium,PERF,✅ Automated,Performance,,,,Not Run,,,,,,Analysis < 120s for 10k+ files,,,,NO,,,NO
+TC-PE-004,Concurrent Request Handling,🟡 High,PERF,✅ Automated,Performance,,,,Not Run,,,,,,All concurrent requests complete,,,,NO,,,NO
+TC-PE-005,Memory Usage,🟢 Medium,PERF,✅ Automated,Performance,,,,Not Run,,,,,,"Memory < 2GB, no leaks",,,,NO,,,NO
+TC-PE-006,Cache Effectiveness,🟢 Medium,PERF,✅ Automated,Performance,,,,Not Run,,,,,,Cache hit provides >50% speedup,,,,NO,,,NO
+TC-FI-001,Network Failure Resilience,🟡 High,EC,✅ Automated,Resilience,,,,Not Run,,,,,,"Retries attempted, graceful degradation",,,,NO,,,NO
+TC-FI-002,GitHub API Rate Limit,🟡 High,EC,✅ Automated,Resilience,,,,Not Run,,,,,,"Rate limit detected, retry with backoff",,,,NO,,,NO
+TC-FI-003,Partial File Write Failure,🟢 Medium,EC,✅ Automated,Resilience,,,,Not Run,,,,,,"Error detected, no corruption",,,,NO,,,NO
+TC-FI-004,GitHub Service Degradation,🟢 Medium,EC,✅ Automated,Resilience,,,,Not Run,,,,,,"Timeout handled, user notified",,,,NO,,,NO
+TC-FI-005,Process Interruption,🟢 Medium,EC,✅ Automated,Resilience,,,,Not Run,,,,,,"Graceful shutdown, clean state",,,,NO,,,NO
+TC-OB-001,Logging Completeness,🟢 Medium,CP,🟨 Partial,Observability,,,,Not Run,,,,,,"Structured logs with context, secrets masked",,,,NO,,,NO
+TC-OB-002,Metrics Collection,🟢 Medium,CP,🟨 Partial,Observability,,,,Not Run,,,,,,Metrics collected in correct format,,,,NO,,,NO
+TC-OB-003,Distributed Tracing,🟢 Medium,CP,🟨 Partial,Observability,,,,Not Run,,,,,,"Trace ID propagated, spans visible",,,,NO,,,NO
+TC-OB-004,Error Reporting,🟡 High,CP,✅ Automated,Observability,,,,Not Run,,,,,,Error logged and reported with stack trace,,,,NO,,,NO
+TC-OB-005,Health Check Endpoint,🟡 High,CP,✅ Automated,Observability,,,,Not Run,,,,,,Health check returns correct status,,,,NO,,,NO
+TC-WF-001,End-to-End GitHub Workflow,🟠 Critical,CP,✅ Automated,Integration,,,,Not Run,,,,,,Full workflow completes < 5min,,,,NO,,,NO
+TC-WF-002,Multi-Repository Workflow,🟢 Medium,CP,🟨 Partial,Integration,,,,Not Run,,,,,,All repos updated with consistent changes,,,,NO,,,NO
+TC-WF-003,CI/CD Integration,🟡 High,CP,✅ Automated,Integration,,,,Not Run,,,,,,"CI triggered, status monitored, results reported",,,,NO,,,NO
+TC-WF-004,Rollback Workflow,🟡 High,CP,🟨 Partial,Integration,,,,Not Run,,,,,,"Rollback triggered, state restored",,,,NO,,,NO
+TC-NF-001,GDPR Compliance,🟢 Medium,COMP,❌ Manual,Compliance,,,,Not Run,,,,,,"No PII in logs, retention enforced, deletion works",,,,NO,,,NO
+TC-NF-002,Accessibility (WCAG 2.1 AA),🟢 Medium,COMP,❌ Manual,Compliance,,,,Not Run,,,,,,No accessibility violations,,,,NO,,,NO
+TC-NF-003,License Compliance,�� Medium,COMP,🟨 Partial,Compliance,,,,Not Run,,,,,,"Compatible licenses, proper attribution",,,,NO,,,NO
+TC-NF-004,Audit Trail,🟡 High,COMP,✅ Automated,Compliance,,,,Not Run,,,,,,"Complete audit trail, tamper-proof",,,,NO,,,NO
+TC-NF-005,Data Residency,🟢 Medium,COMP,❌ Manual,Compliance,,,,Not Run,,,,,,Data stored in compliant region,,,,NO,,,NO
+TC-EC-001,Empty Repository,🔵 Low,EC,✅ Automated,Edge Case,,,,Not Run,,,,,,"Handles empty repo, no crashes",,,,NO,,,NO
+TC-EC-002,Repository with Unicode Names,🟢 Medium,EC,✅ Automated,Edge Case,,,,Not Run,,,,,,Unicode handled correctly,,,,NO,,,NO
+TC-EC-003,Extremely Long Problem Statement,🔵 Low,EC,✅ Automated,Edge Case,,,,Not Run,,,,,,Handles or rejects gracefully,,,,NO,,,NO
+TC-EC-004,Nested Directory Depth,🔵 Low,EC,✅ Automated,Edge Case,,,,Not Run,,,,,,Handles deep nesting or clear error,,,,NO,,,NO
+TC-EC-005,Repository with No Commits,🔵 Low,EC,✅ Automated,Edge Case,,,,Not Run,,,,,,Creates initial commit or handles gracefully,,,,NO,,,NO
+TC-EC-006,Deleted Branch Reference,🟢 Medium,EC,✅ Automated,Edge Case,,,,Not Run,,,,,,Detects missing branch with clear error,,,,NO,,,NO
+TC-EC-007,Special Characters in Filenames,🟢 Medium,EC,✅ Automated,Edge Case,,,,Not Run,,,,,,Special chars handled correctly,,,,NO,,,NO
