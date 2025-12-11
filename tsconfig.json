@@ -1,32 +1,57 @@
 {
-    "ts-node": {
-        "files": true
-    },
-    "compilerOptions": {
-        "module": "CommonJS",
-        "target": "ES2017",
-        "lib": [
-            "ES2017",
-            "DOM"
-        ],
-        "declaration": true,
-        "allowSyntheticDefaultImports": true,
-        "allowJs": true,
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "noImplicitAny": false,
-        "removeComments": true,
-        "resolveJsonModule": true,
-        "isolatedModules": true,
-        "noEmit": true,
-        "inlineSourceMap": true,
-        "moduleResolution": "node",
-        "ignoreDeprecations": "6.0",
-        "types": ["node"],
-        "plugins": [
-            {
-                "name": "typescript-tslint-plugin"
-            }
-        ],
-    },
+  "ts-node": {
+    "files": true
+  },
+  "compilerOptions": {
+    /* Language and Environment */
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM"],
+    "module": "CommonJS",
+    
+    /* Module Resolution */
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    
+    /* Type Checking */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    
+    /* Emit */
+    "declaration": true,
+    "removeComments": true,
+    "noEmit": true,
+    "inlineSourceMap": true,
+    "isolatedModules": true,
+    
+    /* Interop Constraints */
+    "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
+    
+    /* Advanced */
+    "skipLibCheck": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.spec.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "playwright-report",
+    "test-results"
+  ]
 }
