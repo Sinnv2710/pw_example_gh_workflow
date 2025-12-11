@@ -100,7 +100,7 @@ function generateHTMLReport(data: any): string {
     th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
     th { background-color: #f8f9fa; font-weight: 600; }
     .status-pass { color: #28a745; font-weight: bold; }
-    .status-fail { color: #dc3545; font-weight:  bold; }
+    .status-fail { color: #dc3545; font-weight: bold; }
   </style>
 </head>
 <body>
