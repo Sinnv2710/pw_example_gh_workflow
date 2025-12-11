@@ -1,0 +1,12 @@
+[
+  {
+    "test_id": "TC-001",
+    "file": "tests/test-cases/example.spec.ts",
+    "line": 15,
+    "issue": "Selector timeout - element not found",
+    "confidence": "high",
+    "current_code": "await page.locator('#submit').click();",
+    "suggested_code": "await page.locator('#submit').click({ timeout: 10000 });",
+    "auto_applied": true
+  }
+]
