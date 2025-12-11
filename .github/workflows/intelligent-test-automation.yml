@@ -18,8 +18,8 @@ on:
 env:
   NODE_VERSION: "20"
   TIMESTAMP: ${{ github.run_number }}-${{ github.run_attempt }}
-  TEST_SUITE_NAME: "WebForms"
-  WEBSITE_URL: https://demos.telerik.com/aspnet-ajax/grid/examples/overview/defaultcs.aspx
+  TEST_SUITE_NAME: "landingPage"
+  WEBSITE_URL: "https://demos.telerik.com/aspnet-ajax/imagegallery/"
 
 jobs:
   # =========================================
@@ -66,6 +66,11 @@ jobs:
           echo "normalized_name=$NORMALIZED_NAME" >> $GITHUB_OUTPUT
           echo "Original: ${{ env.TEST_SUITE_NAME }}"
           echo "Normalized: $NORMALIZED_NAME"
+
+      - name: Install jq for JSON processing
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
 
       - name: 📦 Install Dependencies (or restore from cache)
         run: |
@@ -139,30 +144,59 @@ jobs:
 
       - name: 🤖 STEP 2 - Generate Test Cases json
         id: generate-json
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           echo ""
           echo "================================================"
-          echo "📝 STEP 2: GENERATING TEST CASES json"
+          echo "📝 STEP 2: AI-POWERED TEST CASE GENERATION"
           echo "================================================"
+          echo "🤖 Using: Amazon Nova 2 Lite (via OpenRouter)"
+          echo ""
 
           npm run generate:json -- \
             --url "${{ env.WEBSITE_URL }}" \
             --suite "${{ steps.normalize.outputs.normalized_name }}"
 
           if [ -f "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" ]; then
-            TEST_COUNT=$(tail -n +2 "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" | wc -l)
             echo ""
-            echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ Generated $TEST_COUNT test cases"
+            echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ AI-generated test cases saved"
             echo ""
             echo "📊 Test Case Breakdown:"
             
-            HAPPY=$(grep -c "Happy Path" "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" || echo "0")
-            NEGATIVE=$(grep -c "Negative" "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" || echo "0")
-            EDGE=$(grep -c "Edge Case" "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" || echo "0")
-            
-            echo "   - Happy Path: $HAPPY cases"
-            echo "   - Negative: $NEGATIVE cases"
-            echo "   - Edge Cases:  $EDGE cases"
+            # Count test cases using jq
+            if command -v jq &> /dev/null; then
+              POSITIVE=$(jq '.positiveCases | length' "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json")
+              NEGATIVE=$(jq '.negativeCases | length' "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json")
+              EDGE=$(jq '.edgeCases | length' "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json")
+              TOTAL=$((POSITIVE + NEGATIVE + EDGE))
+              
+              echo "   - Total: $TOTAL test cases"
+              echo "   - ✓ Positive: $POSITIVE cases"
+              echo "   - ✗ Negative: $NEGATIVE cases"
+              echo "   - ⚠ Edge Cases: $EDGE cases"
+              
+              # Show AI's analysis if available
+              if jq -e '.analysis' "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" > /dev/null 2>&1; then
+                echo ""
+                echo "🧠 AI Analysis:"
+                jq -r '.analysis | "   Page Type: \(.pageType // "N/A")\n   Complexity: \(.complexity // "N/A")\n   Reasoning: \(.recommendedTestCount // "N/A")"' "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json"
+              fi
+            else
+              # Fallback if jq not available
+              POSITIVE=$(grep -o '"id": "TC-POS-' "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" | wc -l)
+              NEGATIVE=$(grep -o '"id": "TC-NEG-' "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" | wc -l)
+              EDGE=$(grep -o '"id": "TC-EDGE-' "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" | wc -l)
+              TOTAL=$((POSITIVE + NEGATIVE + EDGE))
+              
+              echo "   - Total: $TOTAL test cases"
+              echo "   - ✓ Positive: $POSITIVE cases"
+              echo "   - ✗ Negative: $NEGATIVE cases"
+              echo "   - ⚠ Edge Cases: $EDGE cases"
+            fi
+          else
+            echo "❌ Error: Test cases file not generated"
+            exit 1
           fi
 
       - name: 🤖 STEP 3 - Generate Locator Files
@@ -224,7 +258,12 @@ jobs:
           if git diff --staged --quiet; then
             echo "⚠️ No changes to commit"
           else
-            git commit -m "Generate tests for ${{ env.TEST_SUITE_NAME }} - Explored ${{ env.WEBSITE_URL }} - Generated test cases json, locators, page objects, and test specs - Run #${{ github.run_number }}"
+            git commit -m "🤖 AI-Generated tests for ${{ env.TEST_SUITE_NAME }}
+
+          Explored: ${{ env.WEBSITE_URL }}
+          Generated by: Amazon Nova 2 Lite (OpenRouter)
+          Includes: Test cases JSON, locators, page objects, test specs
+          Run: #${{ github.run_number }}"
             git push
             echo "✓ Files committed and pushed"
           fi
@@ -469,9 +508,14 @@ jobs:
           echo "📝 STEP 10: UPDATING TEST CASES json"
           echo "================================================"
 
-          npm run update:json -- \
-            --json "test-suites/${{ needs.explore-and-generate.outputs.test-suite-name }}-test-cases.json" \
-            --results "test-results/results.json"
+          # Check if update script exists
+          if [ -f "scripts/update-json-results.ts" ]; then
+            npm run update:json -- \
+              --json "test-suites/${{ needs.explore-and-generate.outputs.test-suite-name }}-test-cases.json" \
+              --results "test-results/results.json"
+          else
+            echo "⚠️ Warning: update-json-results.ts not found, skipping update"
+          fi
 
           echo ""
 
