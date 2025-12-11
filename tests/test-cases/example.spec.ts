@@ -41,7 +41,6 @@ test.describe('Centralized Locator Pattern Examples', () => {
 
 	test.skip('Example 2: Using multiple page objects', async ({ page }) => {
 		const inputsPage = new InputsPage(page)
-		const examplePage = new ExamplePage(page)
 
 		// Navigate to inputs page
 		await inputsPage.open()
