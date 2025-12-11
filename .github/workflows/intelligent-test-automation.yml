@@ -3,12 +3,12 @@ name: Intelligent Playwright Test Automation
 on:
   workflow_dispatch:
     inputs:
-      website_url.default:
+      website_url:
         description: "Website URL to test"
         required: true
         type: string
         default: "https://demos.telerik.com/aspnet-ajax/grid/examples/overview/defaultcs.aspx"
-      test_suite_name.default:
+      test_suite_name:
         description: "Test suite name (e.g., login, checkout)"
         required: true
         type: string
