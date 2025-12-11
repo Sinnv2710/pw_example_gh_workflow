@@ -1,0 +1,231 @@
+{
+  "name": "ImageGalleryDemo",
+  "url": "https://demos.telerik.com/aspnet-ajax/imagegallery/",
+  "description": "AI-designed comprehensive test suite based on page analysis",
+  "timestamp": "2025-12-11T17:11:33.635Z",
+  "analysis": {
+    "pageType": "Image Gallery Demo for Trip-Planning WebForms App",
+    "complexity": "Medium",
+    "criticalFlows": [
+      "Search functionality",
+      "Image selection",
+      "Form submission"
+    ],
+    "riskAreas": [
+      "Input validation",
+      "Hidden field security",
+      "Accessibility",
+      "Performance"
+    ],
+    "recommendedTestCount": "20-25 tests"
+  },
+  "positiveCases": [
+    {
+      "id": "TC-POS-001",
+      "suite": "ImageGalleryDemo",
+      "title": "Search for a destination",
+      "type": "Happy Path",
+      "priority": "High",
+      "preconditions": "User is on the Image Gallery page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Enter a destination in the search field",
+          "action": "fill",
+          "locator": "#ctl00_MainContent_DestinationsCombo_Input",
+          "value": "Paris"
+        },
+        {
+          "order": 2,
+          "description": "Click the Search button",
+          "action": "click",
+          "locator": "#ctl00_MainContent_SearchButton"
+        }
+      ],
+      "expectedResult": "Search results for 'Paris' are displayed",
+      "testData": {
+        "destination": "Paris"
+      },
+      "status": "Not Run",
+      "comments": "Ensures the search functionality works as expected"
+    },
+    {
+      "id": "TC-POS-002",
+      "suite": "ImageGalleryDemo",
+      "title": "Select an image",
+      "type": "Happy Path",
+      "priority": "High",
+      "preconditions": "User is on the Image Gallery page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Click on an image to select it",
+          "action": "click",
+          "locator": "button:has-text(\"select\")"
+        }
+      ],
+      "expectedResult": "The selected image is highlighted or marked as selected",
+      "testData": {},
+      "status": "Not Run",
+      "comments": "Ensures the image selection functionality works"
+    },
+    {
+      "id": "TC-POS-003",
+      "suite": "ImageGalleryDemo",
+      "title": "Submit the form",
+      "type": "Happy Path",
+      "priority": "High",
+      "preconditions": "User is on the Image Gallery page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Fill in the required fields",
+          "action": "fill",
+          "locator": "#ctl00_MainContent_DestinationsCombo_Input",
+          "value": "New York"
+        },
+        {
+          "order": 2,
+          "description": "Click the Search button",
+          "action": "click",
+          "locator": "#ctl00_MainContent_SearchButton"
+        },
+        {
+          "order": 3,
+          "description": "Select an image",
+          "action": "click",
+          "locator": "button:has-text(\"select\")"
+        },
+        {
+          "order": 4,
+          "description": "Click the Submit button",
+          "action": "click",
+          "locator": "button:nth-of-type(8)"
+        }
+      ],
+      "expectedResult": "Form is successfully submitted",
+      "testData": {
+        "destination": "New York"
+      },
+      "status": "Not Run",
+      "comments": "Ensures the form submission works as expected"
+    }
+  ],
+  "negativeCases": [
+    {
+      "id": "TC-NEG-001",
+      "suite": "ImageGalleryDemo",
+      "title": "Search with invalid input",
+      "type": "Negative",
+      "priority": "Medium",
+      "preconditions": "User is on the Image Gallery page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Enter an invalid input in the search field",
+          "action": "fill",
+          "locator": "#ctl00_MainContent_DestinationsCombo_Input",
+          "value": "12345"
+        },
+        {
+          "order": 2,
+          "description": "Click the Search button",
+          "action": "click",
+          "locator": "#ctl00_MainContent_SearchButton"
+        }
+      ],
+      "expectedResult": "An error message is displayed indicating invalid input",
+      "testData": {
+        "invalid_input": "12345"
+      },
+      "status": "Not Run",
+      "comments": "Ensures the system handles invalid search inputs"
+    },
+    {
+      "id": "TC-NEG-002",
+      "suite": "ImageGalleryDemo",
+      "title": "Select an image without searching",
+      "type": "Negative",
+      "priority": "Medium",
+      "preconditions": "User is on the Image Gallery page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Click on an image to select it without searching",
+          "action": "click",
+          "locator": "button:has-text(\"select\")"
+        }
+      ],
+      "expectedResult": "An error message is displayed indicating no search results",
+      "testData": {},
+      "status": "Not Run",
+      "comments": "Ensures the system handles attempts to select an image without a search"
+    }
+  ],
+  "edgeCases": [
+    {
+      "id": "TC-EDGE-001",
+      "suite": "ImageGalleryDemo",
+      "title": "Search with very long input",
+      "type": "Edge Case",
+      "priority": "Low",
+      "preconditions": "User is on the Image Gallery page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Enter a very long input in the search field",
+          "action": "fill",
+          "locator": "#ctl00_MainContent_DestinationsCombo_Input",
+          "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "order": 2,
+          "description": "Click the Search button",
+          "action": "click",
+          "locator": "#ctl00_MainContent_SearchButton"
+        }
+      ],
+      "expectedResult": "An error message is displayed indicating input too long",
+      "testData": {
+        "long_input": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "status": "Not Run",
+      "comments": "Ensures the system handles very long search inputs"
+    },
+    {
+      "id": "TC-EDGE-002",
+      "suite": "ImageGalleryDemo",
+      "title": "Select an image with special characters",
+      "type": "Edge Case",
+      "priority": "Low",
+      "preconditions": "User is on the Image Gallery page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Enter special characters in the search field",
+          "action": "fill",
+          "locator": "#ctl00_MainContent_DestinationsCombo_Input",
+          "value": "!@#$%^&*()"
+        },
+        {
+          "order": 2,
+          "description": "Click the Search button",
+          "action": "click",
+          "locator": "#ctl00_MainContent_SearchButton"
+        },
+        {
+          "order": 3,
+          "description": "Click on an image to select it",
+          "action": "click",
+          "locator": "button:has-text(\"select\")"
+        }
+      ],
+      "expectedResult": "An error message is displayed indicating invalid input",
+      "testData": {
+        "special_characters": "!@#$%^&*()"
+      },
+      "status": "Not Run",
+      "comments": "Ensures the system handles special characters in search inputs"
+    }
+  ]
+}

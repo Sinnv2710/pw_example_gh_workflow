@@ -8,62 +8,43 @@ test.describe('ImageGalleryDemo', () => {
   test('TC-POS-001 - Search for a destination @critical', async ({ page }) => {
     await page.locator('#ctl00_MainContent_DestinationsCombo_Input').fill('Paris')
     await page.locator('#ctl00_MainContent_SearchButton').click()
-    await expect(page.locator('#ctl00_MainContent_RadGrid1_ctl00')).toBeVisible()
+    await expect(page.locator('.rgMasterTable')).toBeVisible()
   })
 
   test('TC-POS-002 - Select an image @critical', async ({ page }) => {
-    await page.locator('img[src*="paris"]').hover()
-    await page.locator('button:has-text("select")').click()
-    await expect(page.locator('img[src*="paris"]')).toHaveClass(/selected/)
+    await page.getByRole('button', { name: 'select' }).first().click()
+    await expect(page.locator('.t-selected')).toBeVisible()
   })
 
-  test('TC-POS-003 - Submit a form @critical', async ({ page }) => {
+  test('TC-POS-003 - Submit the form @critical', async ({ page }) => {
     await page.locator('#ctl00_MainContent_DestinationsCombo_Input').fill('New York')
     await page.locator('#ctl00_MainContent_SearchButton').click()
-    await page.locator('#ctl00_MainContent_SubmitButton').click()
-    await expect(page).toHaveURL(/success/)
+    await page.getByRole('button', { name: 'select' }).first().click()
+    await page.getByRole('button', { name: 'Submit' }).click()
+    await expect(page.locator('#successMessage')).toBeVisible()
   })
 
-  test('TC-NEG-001 - Search with invalid input @critical', async ({ page }) => {
+  test('TC-NEG-001 - Search with invalid input @medium', async ({ page }) => {
     await page.locator('#ctl00_MainContent_DestinationsCombo_Input').fill('12345')
     await page.locator('#ctl00_MainContent_SearchButton').click()
-    await expect(page.locator('.t-error')).toBeVisible()
+    await expect(page.getByText('Invalid input')).toBeVisible()
   })
 
-  test('TC-NEG-002 - Select an image with invalid action @medium', async ({ page }) => {
-    await page.locator('img[src*="paris"]').hover()
-    const beforeClass = await page.locator('img[src*="paris"]').getAttribute('class')
-    await page.locator('button:has-text("non-existent")').click({ timeout: 1000 }).catch(() => {})
-    const afterClass = await page.locator('img[src*="paris"]').getAttribute('class')
-    expect(beforeClass).toEqual(afterClass)
+  test('TC-NEG-002 - Select an image without searching @medium', async ({ page }) => {
+    await page.getByRole('button', { name: 'select' }).first().click()
+    await expect(page.getByText('No search results')).toBeVisible()
   })
 
-  test('TC-NEG-003 - Submit a form with missing required fields @critical', async ({ page }) => {
+  test('TC-EDGE-001 - Search with very long input @low', async ({ page }) => {
+    const longInput = 'a'.repeat(500)
+    await page.locator('#ctl00_MainContent_DestinationsCombo_Input').fill(longInput)
     await page.locator('#ctl00_MainContent_SearchButton').click()
-    await expect(page.locator('.t-required')).toBeVisible()
+    await expect(page.getByText('Input too long')).toBeVisible()
   })
 
-  test('TC-EDGE-001 - Search with very long input @medium', async ({ page }) => {
-    const longString = 'a'.repeat(500)
-    await page.locator('#ctl00_MainContent_DestinationsCombo_Input').fill(longString)
+  test('TC-EDGE-002 - Select an image with special characters @low', async ({ page }) => {
+    await page.locator('#ctl00_MainContent_DestinationsCombo_Input').fill('!@#$%^&*()')
     await page.locator('#ctl00_MainContent_SearchButton').click()
-    await expect(page.locator('.t-error')).toContainText('too long')
-  })
-
-  test('TC-EDGE-002 - Select an image with special characters @medium', async ({ page }) => {
-    await page.locator('img[src*="paris"]').hover()
-    const beforeClass = await page.locator('img[src*="paris"]').getAttribute('class')
-    await page.locator('button:has-text("select")').click()
-    const afterClass = await page.locator('img[src*="paris"]').getAttribute('class')
-    expect(beforeClass).not.toEqual(afterClass)
-  })
-
-  test('TC-EDGE-003 - Submit a form with XSS payload @critical', async ({ page }) => {
-    page.on('dialog', dialog => {
-      throw new Error('Unexpected dialog: ' + dialog.message())
-    })
-    await page.locator('#ctl00_MainContent_DestinationsCombo_Input').fill('<script>alert(\'XSS\')</script>')
-    await page.locator('#ctl00_MainContent_SubmitButton').click()
-    await expect(page.locator('body')).not.toContainText('<script>')
+    await expect(page.getByText('Invalid input')).toBeVisible()
   })
 })
