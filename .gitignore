@@ -4,20 +4,6 @@ package-lock.json
 yarn.lock
 bun.lock
 
-# Test Results
-test-results/
-playwright-report/
-*.xml
-*.json
-
-# Screenshots and Videos
-screenshots/
-videos/
-trace/
-
-# Reports
-reports/*.html
-reports/*.pdf
 
 # Environment Variables
 .env
