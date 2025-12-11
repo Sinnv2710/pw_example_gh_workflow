@@ -90,7 +90,7 @@ async function analyzeFailures(): Promise<void> {
 
 	logger.section('Failure Summary')
 	failures.forEach((failure, index) => {
-		logger.bullet(`${index + 1}. ${failure.testName}`)
+		logger.bullet(`${index + 1}.${failure.testName}`)
 		logger.bullet(`Root Cause: ${failure.rootCause}`, 2)
 	})
 
@@ -153,7 +153,7 @@ function generateAnalysisReport(
 	report += `---\n\n`
 
 	failures.forEach((failure, index) => {
-		report += `## ${index + 1}. ${failure.testName}\n\n`
+		report += `## ${index + 1}.${failure.testName}\n\n`
 		report += `**Test ID:** ${failure.testId}\n\n`
 		report += `**Root Cause:** ${failure.rootCause}\n\n`
 		report += `**Error Message:**\n\`\`\`\n${failure.errorMessage}\n\`\`\`\n\n`

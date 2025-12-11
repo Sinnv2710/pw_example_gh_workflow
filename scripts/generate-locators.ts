@@ -67,7 +67,7 @@ export const ${constantName} = {
   BUTTONS: {
     SUBMIT: {
       primary: 'button[type="submit"]',
-      fallback: '. submit-btn',
+      fallback: '.submit-btn',
       dataTestId: '[data-testid="submit-button"]',
       description: 'Submit button'
     }
@@ -90,7 +90,7 @@ export const ${constantName} = {
 function updateLocatorIndex(pageName: string): void {
 	const indexPath = path.join(process.cwd(), 'locators', 'index.ts')
 	const constantName = pageName.toUpperCase() + '_LOCATORS'
-	const exportLine = `export { ${constantName} } from './${pageName}. locators';\n`
+	const exportLine = `export { ${constantName} } from './${pageName}.locators';\n`
 
 	let indexContent = ''
 

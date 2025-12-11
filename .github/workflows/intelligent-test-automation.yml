@@ -1,41 +1,40 @@
 name: Intelligent Playwright Test Automation
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
     inputs:
-      website_url: 
-        description: 'Website URL to test'
+      website_url:
+        description: "Website URL to test"
         required: true
         type: string
       test_suite_name:
-        description: 'Test suite name (e.g., login, checkout)'
+        description: "Test suite name (e.g., login, checkout)"
         required: true
         type: string
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: "20"
   TIMESTAMP: ${{ github.run_number }}-${{ github.run_attempt }}
 
 jobs:
-  
   # =========================================
   # STEP 1-5: Explore & Generate
   # =========================================
   explore-and-generate:
     name: 🔍 Explore & Generate Tests
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📋 Checkout Repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
-        with: 
+        with:
           node-version: ${{ env.NODE_VERSION }}
-      
+
       - name: 📦 Install Dependencies
         run: |
           echo "================================================"
@@ -44,7 +43,7 @@ jobs:
           npm ci
           npx playwright install --with-deps chromium
           echo "✓ Dependencies installed"
-      
+
       - name: 🤖 STEP 1 - Explore Website
         id: explore
         run: |
@@ -53,23 +52,23 @@ jobs:
           echo "🔍 STEP 1: WEBSITE EXPLORATION"
           echo "================================================"
           echo "📍 Target URL: ${{ inputs.website_url }}"
-          echo "📝 Test Suite: ${{ inputs. test_suite_name }}"
+          echo "📝 Test Suite: ${{ inputs.test_suite_name }}"
           echo ""
           echo "[$(date +'%Y-%m-%d %H:%M:%S')] Starting exploration..."
-          
+
           cat > explore-website.js << 'EXPLORESCRIPT'
           const { chromium } = require('@playwright/test');
-          
+
           (async () => {
             const startTime = Date.now();
             const timestamp = () => new Date().toISOString().substring(0, 19).replace('T', ' ');
             
             console.log(`[${timestamp()}] 🌐 Launching browser...`);
             
-            const browser = await chromium. launch();
-            const page = await browser. newPage();
+            const browser = await chromium.launch();
+            const page = await browser.newPage();
             
-            console.log(`[${timestamp()}] 📍 Navigating to:  ${{ inputs.website_url }}`);
+            console.log(`[${timestamp()}] 📍 Navigating to: ${{ inputs.website_url }}`);
             await page.goto('${{ inputs.website_url }}');
             
             console.log(`[${timestamp()}] ✓ Page loaded`);
@@ -107,21 +106,21 @@ jobs:
             await browser.close();
           })();
           EXPLORESCRIPT
-          
+
           node explore-website.js
-      
+
       - name: 🤖 STEP 2 - Generate Test Cases CSV
-        id:  generate-csv
+        id: generate-csv
         run: |
           echo ""
           echo "================================================"
           echo "📝 STEP 2: GENERATING TEST CASES CSV"
           echo "================================================"
-          
+
           npm run generate:csv -- \
             --url "${{ inputs.website_url }}" \
             --suite "${{ inputs.test_suite_name }}"
-          
+
           if [ -f "test-suites/${{ inputs.test_suite_name }}-test-cases.csv" ]; then
             TEST_COUNT=$(tail -n +2 "test-suites/${{ inputs.test_suite_name }}-test-cases.csv" | wc -l)
             echo ""
@@ -137,63 +136,63 @@ jobs:
             echo "   - Negative: $NEGATIVE cases"
             echo "   - Edge Cases:  $EDGE cases"
           fi
-      
-      - name:  🤖 STEP 3 - Generate Locator Files
+
+      - name: 🤖 STEP 3 - Generate Locator Files
         id: generate-locators
         run: |
           echo ""
           echo "================================================"
           echo "🔑 STEP 3: GENERATING LOCATOR FILES"
           echo "================================================"
-          
+
           npm run generate:locators -- \
             --suite "${{ inputs.test_suite_name }}"
-          
+
           echo ""
-      
-      - name:  🤖 STEP 4 - Generate Page Objects
+
+      - name: 🤖 STEP 4 - Generate Page Objects
         id: generate-pages
         run: |
           echo ""
           echo "================================================"
           echo "📄 STEP 4: GENERATING PAGE OBJECTS (OOP)"
           echo "================================================"
-          
+
           npm run generate:pages -- \
             --suite "${{ inputs.test_suite_name }}"
-          
+
           echo ""
-      
-      - name:  🤖 STEP 5 - Generate Test Specs
+
+      - name: 🤖 STEP 5 - Generate Test Specs
         id: generate-tests
         run: |
           echo ""
           echo "================================================"
           echo "🧪 STEP 5: GENERATING TEST SPECIFICATIONS"
           echo "================================================"
-          
+
           npm run generate:tests -- \
             --suite "${{ inputs.test_suite_name }}" \
             --csv "test-suites/${{ inputs.test_suite_name }}-test-cases.csv"
-          
+
           TEST_FILES=$(find tests/test-cases -name "*${{ inputs.test_suite_name }}*.spec.ts" 2>/dev/null | wc -l)
           echo ""
           echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ Generated $TEST_FILES test spec files"
-      
+
       - name: 💾 Commit Generated Files
         run: |
           echo ""
           echo "================================================"
           echo "💾 COMMITTING GENERATED FILES"
           echo "================================================"
-          
+
           git config user.name "Playwright Test Generator"
           git config user.email "test-generator@github.com"
-          
+
           git add test-suites/
           git add locators/
           git add tests/
-          
+
           if git diff --staged --quiet; then
             echo "⚠️ No changes to commit"
           else
@@ -201,15 +200,15 @@ jobs:
             git push
             echo "✓ Files committed and pushed"
           fi
-          
+
           echo ""
           echo "================================================"
           echo "✅ GENERATION PHASE COMPLETE"
           echo "================================================"
-    
+
     outputs:
-      test-suite-name: ${{ inputs. test_suite_name }}
-  
+      test-suite-name: ${{ inputs.test_suite_name }}
+
   # =========================================
   # STEP 6: Run Tests
   # =========================================
@@ -217,18 +216,18 @@ jobs:
     name: ▶️ Run Tests
     needs: explore-and-generate
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📋 Checkout Repository
         uses: actions/checkout@v4
-        with: 
+        with:
           ref: ${{ github.ref }}
-      
+
       - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
-        with: 
+        with:
           node-version: ${{ env.NODE_VERSION }}
-      
+
       - name: 📦 Install Dependencies
         run: |
           echo "================================================"
@@ -236,7 +235,7 @@ jobs:
           echo "================================================"
           npm ci
           npx playwright install --with-deps
-      
+
       - name: 🧪 STEP 6 - Execute Tests
         id: run-tests
         run: |
@@ -249,23 +248,23 @@ jobs:
           echo "   - Screenshots: ON FAILURE"
           echo "   - Videos: ON FAILURE"
           echo ""
-          
+
           npx playwright test \
             --trace on \
             --reporter=html,json,list \
             2>&1 | tee test-execution.log
-          
+
           TEST_EXIT_CODE=$?
-          
+
           echo ""
           echo "[$(date +'%Y-%m-%d %H:%M:%S')] Test execution finished"
-          
+
           if [ -f "test-results/results.json" ]; then
             echo ""
             echo "📊 TEST RESULTS SUMMARY:"
             
             TOTAL=$(grep -o '"title"' test-results/results.json | wc -l)
-            PASSED=$(grep -c '"ok":  true' test-results/results. json || echo "0")
+            PASSED=$(grep -c '"ok":  true' test-results/results.json || echo "0")
             FAILED=$(grep -c '"ok": false' test-results/results.json || echo "0")
             
             echo "   Total Tests: $TOTAL"
@@ -277,15 +276,15 @@ jobs:
               echo "   Success Rate: $SUCCESS_RATE%"
             fi
           fi
-          
+
           echo ""
           echo "✓ STEP 6 COMPLETE"
-          
+
           exit 0
         continue-on-error: true
-      
+
       - name: 📤 Upload Test Results
-        if:  always()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ env.TIMESTAMP }}
@@ -294,10 +293,10 @@ jobs:
             playwright-report/
             test-execution.log
           retention-days: 30
-    
+
     outputs:
       has-failures: ${{ steps.run-tests.outcome == 'failure' }}
-  
+
   # =========================================
   # STEP 7-8: Analyze & Fix
   # =========================================
@@ -306,27 +305,27 @@ jobs:
     needs: run-tests
     if: always()
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 📋 Checkout Repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
-      
-      - name: ⚙️ Setup Node. js
+
+      - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      
+
       - name: 📦 Install Dependencies
-        run:  npm ci
-      
-      - name:  📥 Download Test Results
+        run: npm ci
+
+      - name: 📥 Download Test Results
         uses: actions/download-artifact@v4
         with:
           name: test-results-${{ env.TIMESTAMP }}
           path: ./
-      
+
       - name: 🔍 STEP 7 - Analyze Failures
         id: analyze
         run: |
@@ -334,41 +333,41 @@ jobs:
           echo "================================================"
           echo "🔍 STEP 7: ANALYZING TEST FAILURES"
           echo "================================================"
-          
+
           npm run analyze:failures
-          
-          if [ -f "analysis/failure-analysis-"*". md" ]; then
-            ANALYSIS_FILE=$(ls -t analysis/failure-analysis-*. md | head -1)
+
+          if [ -f "analysis/failure-analysis-"*".md" ]; then
+            ANALYSIS_FILE=$(ls -t analysis/failure-analysis-*.md | head -1)
             echo ""
             echo "✓ Analysis report generated: $ANALYSIS_FILE"
             echo ""
             echo "📊 FAILURE ANALYSIS PREVIEW:"
             head -n 30 "$ANALYSIS_FILE"
           fi
-      
-      - name:  🔧 STEP 8 - Auto-Fix Issues
+
+      - name: 🔧 STEP 8 - Auto-Fix Issues
         id: autofix
         run: |
           echo ""
           echo "================================================"
           echo "🔧 STEP 8: AUTO-FIX & SUGGESTIONS"
           echo "================================================"
-          
+
           npm run auto-fix
-          
+
           if [ -f "analysis/suggested-fixes.json" ]; then
             echo ""
             echo "📋 FIX SUGGESTIONS:"
             cat analysis/suggested-fixes.json | head -n 50
           fi
-      
+
       - name: 💾 Commit Analysis & Fixes
         run: |
           git config user.name "Auto-Fix Bot"
           git config user.email "auto-fix@github.com"
-          
+
           git add tests/ analysis/
-          
+
           if git diff --staged --quiet; then
             echo "No auto-fixes to commit"
           else
@@ -376,7 +375,7 @@ jobs:
             git push
             echo "✓ Auto-fixes committed"
           fi
-  
+
   # =========================================
   # STEP 9-10: Report & Update
   # =========================================
@@ -385,77 +384,77 @@ jobs:
     needs: [explore-and-generate, run-tests, analyze-and-fix]
     if: always()
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name:  📋 Checkout Repository
+      - name: 📋 Checkout Repository
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
-      
-      - name: ⚙️ Setup Node. js
+
+      - name: ⚙️ Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      
+
       - name: 📦 Install Dependencies
-        run:  npm ci
-      
+        run: npm ci
+
       - name: 📥 Download Test Results
-        uses:  actions/download-artifact@v4
+        uses: actions/download-artifact@v4
         with:
-          name:  test-results-${{ env. TIMESTAMP }}
+          name: test-results-${{ env.TIMESTAMP }}
           path: ./
-      
+
       - name: 📊 STEP 9 - Generate Report
         run: |
           echo ""
           echo "================================================"
           echo "📊 STEP 9: GENERATING TEST REPORT"
           echo "================================================"
-          
+
           npm run generate:report
-          
+
           REPORT_FILE=$(ls -t reports/test-report-*.html 2>/dev/null | head -1)
           if [ -n "$REPORT_FILE" ]; then
             echo ""
             echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ Report generated: $REPORT_FILE"
           fi
-      
-      - name:  📝 STEP 10 - Update CSV with Results
+
+      - name: 📝 STEP 10 - Update CSV with Results
         run: |
           echo ""
           echo "================================================"
           echo "📝 STEP 10: UPDATING TEST CASES CSV"
           echo "================================================"
-          
+
           npm run update: csv -- \
             --csv "test-suites/${{ needs.explore-and-generate.outputs.test-suite-name }}-test-cases.csv" \
             --results "test-results/results.json"
-          
+
           echo ""
-      
+
       - name: 💾 Commit Results
         run: |
           git config user.name "Test Reporter"
           git config user.email "reporter@github.com"
-          
+
           git add test-suites/ reports/ analysis/
-          
+
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update test results for ${{ needs.explore-and-generate.outputs.test-suite-name }} - Updated CSV with Pass/Fail/Flaky - Generated HTML report - Run #${{ github. run_number }}"
+            git commit -m "Update test results for ${{ needs.explore-and-generate.outputs.test-suite-name }} - Updated CSV with Pass/Fail/Flaky - Generated HTML report - Run #${{ github.run_number }}"
             git push
             echo "✓ Results committed"
           fi
-      
+
       - name: 📤 Upload Final Report
         uses: actions/upload-artifact@v4
         with:
-          name: final-report-${{ env. TIMESTAMP }}
+          name: final-report-${{ env.TIMESTAMP }}
           path: reports/
           retention-days: 90
-      
+
       - name: 🎉 Pipeline Complete
         run: |
           echo ""
@@ -473,5 +472,5 @@ jobs:
           echo "✅ All 10 steps completed"
           echo ""
           echo "📂 Artifacts:"
-          echo "   - Test Results: test-results-${{ env. TIMESTAMP }}"
+          echo "   - Test Results: test-results-${{ env.TIMESTAMP }}"
           echo "   - Final Report: final-report-${{ env.TIMESTAMP }}"

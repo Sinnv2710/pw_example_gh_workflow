@@ -51,7 +51,7 @@ function generatePageContent(suiteName: string): string {
 
 	return `import { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
-import { ${constantName} } from '../../locators/${suiteName}. locators';
+import { ${constantName} } from '../../locators/${suiteName}.locators';
 
 /**
  * ${className} - Page Object Model
@@ -65,15 +65,15 @@ export class ${className} extends BasePage {
   // All locators use centralized definitions from locators/${suiteName}.locators.ts
   
   private get exampleInput(): Locator {
-    return this.locatorHelper.getLocatorSync(${constantName}.INPUTS. EXAMPLE_INPUT);
+    return this.locatorHelper.getLocatorSync(${constantName}.INPUTS.EXAMPLE_INPUT);
   }
   
   private get submitButton(): Locator {
-    return this.locatorHelper.getLocatorSync(${constantName}. BUTTONS.SUBMIT);
+    return this.locatorHelper.getLocatorSync(${constantName}.BUTTONS.SUBMIT);
   }
   
   private get mainContainer(): Locator {
-    return this.locatorHelper.getLocatorSync(${constantName}. CONTAINERS.MAIN);
+    return this.locatorHelper.getLocatorSync(${constantName}.CONTAINERS.MAIN);
   }
   
   // ===== Actions =====
@@ -127,7 +127,7 @@ const suiteIndex = args.indexOf('--suite')
 
 if (suiteIndex === -1) {
 	logger.error('Missing required argument: --suite')
-	logger.info('Usage: ts-node scripts/generate-pages. ts --suite <NAME>')
+	logger.info('Usage: ts-node scripts/generate-pages.ts --suite <NAME>')
 	process.exit(1)
 }
 

@@ -90,11 +90,11 @@ function generateHTMLReport(data: any): string {
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; }
     h1 { color: #333; }
-    . summary { background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    .summary { background: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0; }
     .stat { display: inline-block; margin: 10px 20px 10px 0; }
-    . stat . value { font-size: 32px; font-weight: bold; }
+    .stat .value { font-size: 32px; font-weight: bold; }
     .stat .label { color: #666; }
-    . pass { color: #28a745; }
+    .pass { color: #28a745; }
     .fail { color: #dc3545; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }

@@ -102,9 +102,9 @@ test.describe('Centralized Locator Pattern Examples', () => {
 		await inputsPage.open()
 
 		// The LocatorHelper automatically tries:
-		// 1. Primary selector (#input-number)
-		// 2. dataTestId if primary fails ([data-testid="input-number"])
-		// 3. Fallback if dataTestId fails (input[type="number"])
+		// 1.Primary selector (#input-number)
+		// 2.dataTestId if primary fails ([data-testid="input-number"])
+		// 3.Fallback if dataTestId fails (input[type="number"])
 
 		// You don't need to worry about which one works - it's automatic!
 		await inputsPage.fillNumber('42')
@@ -155,11 +155,11 @@ test.describe('Centralized Locator Pattern Examples', () => {
 /**
  * KEY TAKEAWAYS:
  *
- * 1. NEVER hardcode selectors in tests or page objects
- * 2. ALWAYS use centralized locators from locators/ directory
- * 3. ALWAYS extend BasePage for page objects
- * 4. Use LocatorHelper's automatic fallback for reliability
- * 5. Keep tests clean and readable
+ * 1.NEVER hardcode selectors in tests or page objects
+ * 2.ALWAYS use centralized locators from locators/ directory
+ * 3.ALWAYS extend BasePage for page objects
+ * 4.Use LocatorHelper's automatic fallback for reliability
+ * 5.Keep tests clean and readable
  *
  * GOOD PRACTICE:
  * ✅ inputsPage.fillNumber('42')

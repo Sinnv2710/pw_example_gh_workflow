@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Intelligent Playwright test automation with centralized locator management",
   "scripts": {
-    "generate: csv": "ts-node scripts/generate-csv. ts",
+    "generate: csv": "ts-node scripts/generate-csv.ts",
     "generate:locators": "ts-node scripts/generate-locators.ts",
     "generate:pages": "ts-node scripts/generate-pages.ts",
     "generate:tests": "ts-node scripts/generate-tests.ts",

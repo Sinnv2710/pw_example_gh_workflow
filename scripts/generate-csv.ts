@@ -57,7 +57,7 @@ async function generateTestCasesCSV(
 	}
 
 	// Generate CSV content
-	const csvPath = path.join(csvDir, `${suiteName}-test-cases. csv`)
+	const csvPath = path.join(csvDir, `${suiteName}-test-cases.csv`)
 	const csvContent = convertToCSV(testCases)
 
 	// Write to file
@@ -153,7 +153,7 @@ function generateTemplateTestCases(suiteName: string): TestCase[] {
 		priority: 'High',
 		preconditions: 'User account exists, Browser open',
 		steps:
-			'1. Navigate to homepage\n2. Enter valid credentials\n3. Click submit\n4. Verify success',
+			'1.Navigate to homepage\n2.Enter valid credentials\n3.Click submit\n4.Verify success',
 		expectedResult: 'User successfully completes the flow',
 		testData: 'username: test@example.com, password: Test123!',
 		status: 'Not Run',
@@ -171,7 +171,7 @@ function generateTemplateTestCases(suiteName: string): TestCase[] {
 		priority: 'High',
 		preconditions: 'Browser open',
 		steps:
-			'1. Navigate to homepage\n2. Enter invalid data\n3. Click submit\n4. Verify error message',
+			'1.Navigate to homepage\n2.Enter invalid data\n3.Click submit\n4.Verify error message',
 		expectedResult: 'Error message displayed: Invalid input',
 		testData: 'username: invalid',
 		status: 'Not Run',
@@ -189,7 +189,7 @@ function generateTemplateTestCases(suiteName: string): TestCase[] {
 		priority: 'Medium',
 		preconditions: 'Browser open',
 		steps:
-			'1. Navigate to homepage\n2. Leave all fields empty\n3. Click submit\n4. Verify validation',
+			'1.Navigate to homepage\n2.Leave all fields empty\n3.Click submit\n4.Verify validation',
 		expectedResult: 'Validation error: Required fields empty',
 		testData: '',
 		status: 'Not Run',

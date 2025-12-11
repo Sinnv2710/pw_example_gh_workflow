@@ -4,14 +4,14 @@
 export const BASE_LOCATORS = {
 	COMMON: {
 		LOADING_SPINNER: {
-			primary: '. loading-spinner',
+			primary: '.loading-spinner',
 			fallback: '[class*="loading"]',
 			dataTestId: '[data-testid="loading"]',
 			description: 'Loading spinner indicator',
 		},
 		ERROR_MESSAGE: {
 			primary: '.error-message',
-			fallback: '. alert-danger',
+			fallback: '.alert-danger',
 			dataTestId: '[data-testid="error-msg"]',
 			description: 'Error message container',
 		},
@@ -24,7 +24,7 @@ export const BASE_LOCATORS = {
 	},
 	NAVIGATION: {
 		HEADER: {
-			primary: 'header. main-header',
+			primary: 'header.main-header',
 			fallback: 'header',
 			description: 'Main header/navigation',
 		},
