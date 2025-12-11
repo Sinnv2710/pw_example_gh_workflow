@@ -13,173 +13,303 @@ import { Logger } from './logger'
 const logger = new Logger('Test Generation')
 
 interface TestStep {
-  order: number
-  description: string
-  action: string
-  locator?: string
-  value?: string
+	order: number
+	description: string
+	action: string
+	locator?: string
+	value?: string
 }
 
 interface TestCase {
-  id: string
-  suite: string
-  title: string
-  type: 'Happy Path' | 'Negative' | 'Edge Case'
-  priority: 'High' | 'Medium' | 'Low'
-  preconditions: string
-  steps: TestStep[]
-  expectedResult: string
-  testData: Record<string, any>
-  status: 'Not Run' | 'Pass' | 'Fail' | 'Flaky'
-  comments: string
+	id: string
+	suite: string
+	title: string
+	type: 'Happy Path' | 'Negative' | 'Edge Case'
+	priority: 'High' | 'Medium' | 'Low'
+	preconditions: string
+	steps: TestStep[]
+	expectedResult: string
+	testData: Record<string, any>
+	status: 'Not Run' | 'Pass' | 'Fail' | 'Flaky'
+	comments: string
 }
 
-interface TestSuite {
-  name: string
-  url: string
-  description: string
-  timestamp: string
-  testCases: TestCase[]
+interface TestSuiteJSON {
+	name: string
+	url: string
+	description: string
+	timestamp: string
+	analysis?: {
+		pageType?: string
+		complexity?: string
+		recommendedTestCount?: string
+	}
+	positiveCases?: TestCase[]
+	negativeCases?: TestCase[]
+	edgeCases?: TestCase[]
+	testCases?: TestCase[] // Legacy format support
 }
 
 /**
  * Parse JSON test cases file
  */
-function loadTestCases(jsonPath: string): TestSuite {
-  logger.progress(`📖 Loading test cases from: ${jsonPath}`)
+function loadTestCases(jsonPath: string): {
+	suite: TestSuiteJSON
+	allTests: TestCase[]
+} {
+	logger.progress(`📖 Loading test cases from: ${jsonPath}`)
 
-  if (!fs.existsSync(jsonPath)) {
-    logger.error(`File not found: ${jsonPath}`)
-    process.exit(1)
-  }
+	if (!fs.existsSync(jsonPath)) {
+		logger.error(`File not found: ${jsonPath}`)
+		process.exit(1)
+	}
 
-  const content = fs.readFileSync(jsonPath, 'utf-8')
-  const testSuite: TestSuite = JSON.parse(content)
+	const content = fs.readFileSync(jsonPath, 'utf-8')
+	const testSuite: TestSuiteJSON = JSON.parse(content)
 
-  logger.success(`✓ Loaded ${testSuite.testCases.length} test cases`)
-  return testSuite
+	// Support both new AI format (positiveCases/negativeCases/edgeCases) and legacy format (testCases)
+	let allTests: TestCase[] = []
+
+	if (
+		testSuite.positiveCases ||
+		testSuite.negativeCases ||
+		testSuite.edgeCases
+	) {
+		// New AI-generated format
+		allTests = [
+			...(testSuite.positiveCases || []),
+			...(testSuite.negativeCases || []),
+			...(testSuite.edgeCases || []),
+		]
+		logger.info('Detected AI-generated test format')
+	} else if (testSuite.testCases) {
+		// Legacy format
+		allTests = testSuite.testCases
+		logger.info('Detected legacy test format')
+	}
+
+	if (allTests.length === 0) {
+		logger.error('No test cases found in JSON file')
+		logger.warn(
+			'Expected format: positiveCases, negativeCases, edgeCases arrays',
+		)
+		process.exit(1)
+	}
+
+	logger.success(`✓ Loaded ${allTests.length} test cases`)
+
+	if (
+		testSuite.positiveCases ||
+		testSuite.negativeCases ||
+		testSuite.edgeCases
+	) {
+		logger.bullet(`  ✓ Positive: ${testSuite.positiveCases?.length || 0}`)
+		logger.bullet(`  ✗ Negative: ${testSuite.negativeCases?.length || 0}`)
+		logger.bullet(`  ⚠ Edge: ${testSuite.edgeCases?.length || 0}`)
+	}
+
+	return { suite: testSuite, allTests }
 }
 
 /**
  * Map step action to Playwright code
  */
 function mapActionToPlaywright(step: TestStep): string {
-  const { action, locator, value } = step
+	const { action, locator, value } = step
 
-  switch (action.toLowerCase()) {
-    case 'fill':
-      return `await page.locator('${locator}').fill('${value}')`
-    case 'click':
-      return `await page.locator('${locator}').click()`
-    case 'check':
-      return `await page.locator('${locator}').check()`
-    case 'uncheck':
-      return `await page.locator('${locator}').uncheck()`
-    case 'select':
-      return `await page.locator('${locator}').selectOption('${value}')`
-    case 'type':
-      return `await page.locator('${locator}').type('${value}')`
-    case 'wait':
-      return `await page.waitForTimeout(${value})`
-    case 'navigate':
-      return `await page.goto('${value}')`
-    case 'assert_visible':
-      return `await expect(page.locator('${locator}')).toBeVisible()`
-    case 'assert_text':
-      return `await expect(page.locator('${locator}')).toContainText('${value}')`
-    case 'assert_url':
-      return `await expect(page).toHaveURL('${value}')`
-    default:
-      return `// TODO: Implement action: ${action}`
-  }
+	// Escape single quotes in values for code generation
+	const escapeValue = (v: string | undefined) => v?.replace(/'/g, "\\'") || ''
+
+	switch (action.toLowerCase()) {
+		case 'fill':
+			return `await page.locator('${locator}').fill('${escapeValue(value)}')`
+		case 'click':
+			return `await page.locator('${locator}').click()`
+		case 'check':
+			return `await page.locator('${locator}').check()`
+		case 'uncheck':
+			return `await page.locator('${locator}').uncheck()`
+		case 'select':
+			return `await page.locator('${locator}').selectOption('${escapeValue(
+				value,
+			)}')`
+		case 'type':
+			return `await page.locator('${locator}').type('${escapeValue(value)}')`
+		case 'wait':
+			return `await page.waitForTimeout(${value || 1000})`
+		case 'navigate':
+			return `await page.goto('${value}')`
+		case 'assert_visible':
+			return `await expect(page.locator('${locator}')).toBeVisible()`
+		case 'assert_text':
+			return `await expect(page.locator('${locator}')).toContainText('${escapeValue(
+				value,
+			)}')`
+		case 'assert_url':
+			return `await expect(page).toHaveURL(/${escapeValue(value)}/)`
+		case 'assert_enabled':
+			return `await expect(page.locator('${locator}')).toBeEnabled()`
+		case 'assert_disabled':
+			return `await expect(page.locator('${locator}')).toBeDisabled()`
+		case 'hover':
+			return `await page.locator('${locator}').hover()`
+		case 'press':
+			return `await page.keyboard.press('${value}')`
+		default:
+			logger.warn(`Unknown action: ${action}`)
+			return `// TODO: Implement action: ${action} on ${locator}`
+	}
 }
 
 /**
  * Generate test file content from test cases
  */
-function generateTestContent(testSuite: TestSuite): string {
-  const importSection = `import { test, expect } from '@playwright/test'
-import { BasePage } from '../pages/BasePage'
+function generateTestContent(
+	testSuite: TestSuiteJSON,
+	allTests: TestCase[],
+): string {
+	const timestamp = new Date().toISOString()
 
-test.describe('${testSuite.name} - Test Suite', () => {
-  let basePage: BasePage
+	const importSection = `import { test, expect } from '@playwright/test'
 
+/**
+ * ${testSuite.name} - Test Suite
+ * 
+ * Auto-generated by AI Test Generator
+ * Generated: ${timestamp}
+ * URL: ${testSuite.url}
+ * Total Tests: ${allTests.length}
+ */
+
+test.describe('${testSuite.name}', () => {
   test.beforeEach(async ({ page }) => {
-    basePage = new BasePage(page)
+    // Navigate to base URL before each test
     await page.goto('${testSuite.url}')
   })
 
 `
 
-  const testCases = testSuite.testCases.map((tc) => {
-    const steps = tc.steps
-      .sort((a, b) => a.order - b.order)
-      .map((step) => {
-        const action = mapActionToPlaywright(step)
-        return `    console.log('${step.order}. ${step.description}')\n    ${action}`
-      })
-      .join('\n\n')
+	// Generate tests grouped by type
+	const testsByType = {
+		'Happy Path': allTests.filter((tc) => tc.type === 'Happy Path'),
+		Negative: allTests.filter((tc) => tc.type === 'Negative'),
+		'Edge Case': allTests.filter((tc) => tc.type === 'Edge Case'),
+	}
 
-    return `  test('${tc.id} - ${tc.title}', async ({ page }) => {
-    // Type: ${tc.type} | Priority: ${tc.priority}
-    // Preconditions: ${tc.preconditions}
-    
+	let testContent = ''
+
+	Object.entries(testsByType).forEach(([type, tests]) => {
+		if (tests.length === 0) return
+
+		testContent += `  // ==========================================\n`
+		testContent += `  // ${type} Tests (${tests.length})\n`
+		testContent += `  // ==========================================\n\n`
+
+		tests.forEach((tc) => {
+			const steps = tc.steps
+				.sort((a, b) => a.order - b.order)
+				.map((step) => {
+					const action = mapActionToPlaywright(step)
+					const comment = step.description ? `// ${step.description}` : ''
+					return comment ? `    ${comment}\n    ${action}` : `    ${action}`
+				})
+				.join('\n\n')
+
+			const testTitle = tc.title.replace(/'/g, "\\'")
+			const tags =
+				tc.priority === 'High'
+					? '@critical'
+					: tc.priority === 'Medium'
+					? '@medium'
+					: '@low'
+
+			testContent += `  test('${tc.id} - ${testTitle} ${tags}', async ({ page }) => {
+    /**
+     * Type: ${tc.type}
+     * Priority: ${tc.priority}
+     * Preconditions: ${tc.preconditions}
+     * Expected: ${tc.expectedResult}
+     */
+
 ${steps}
 
-    // Expected Result: ${tc.expectedResult}
-    console.log('✓ Test completed: ${tc.expectedResult}')
+    // Test completed successfully
+    console.log('✓ ${tc.id}: ${tc.expectedResult}')
   })
+
 `
-  })
+		})
+	})
 
-  const closingSection = `})`
+	const closingSection = `})\n`
 
-  return importSection + testCases.join('\n') + closingSection
+	return importSection + testContent + closingSection
 }
 
 /**
  * Generate test spec files from JSON test cases
  */
 async function generateTestSpecs(
-  jsonPath: string,
-  suiteName: string,
+	jsonPath: string,
+	suiteName: string,
 ): Promise<void> {
-  logger.header('🧪 GENERATING TEST SPECIFICATIONS')
+	logger.header('🧪 GENERATING TEST SPECIFICATIONS')
 
-  // Load test cases from JSON
-  const testSuite = loadTestCases(jsonPath)
+	// Load test cases from JSON
+	const { suite, allTests } = loadTestCases(jsonPath)
 
-  logger.info(`Suite: ${testSuite.name}`)
-  logger.info(`URL: ${testSuite.url}`)
-  logger.info(`Test Cases: ${testSuite.testCases.length}`)
+	logger.info(`Suite: ${suite.name}`)
+	logger.info(`URL: ${suite.url}`)
+	logger.info(`Description: ${suite.description}`)
 
-  // Generate test content
-  const testContent = generateTestContent(testSuite)
+	if (suite.analysis) {
+		logger.section('AI Analysis')
+		logger.bullet(`Page Type: ${suite.analysis.pageType || 'N/A'}`)
+		logger.bullet(`Complexity: ${suite.analysis.complexity || 'N/A'}`)
+		if (suite.analysis.recommendedTestCount) {
+			logger.info(`Reasoning: ${suite.analysis.recommendedTestCount}`)
+		}
+	}
 
-  // Create test directory
-  const testDir = path.join(process.cwd(), 'tests', 'test-cases')
-  if (!fs.existsSync(testDir)) {
-    fs.mkdirSync(testDir, { recursive: true })
-    logger.progress('Created tests/test-cases directory')
-  }
+	// Generate test content
+	logger.progress('Generating Playwright test specs...')
+	const testContent = generateTestContent(suite, allTests)
 
-  // Write test file
-  const testFile = path.join(testDir, `${suiteName}.spec.ts`)
-  fs.writeFileSync(testFile, testContent, 'utf-8')
+	// Create test directory
+	const testDir = path.join(process.cwd(), 'tests', 'test-cases')
+	if (!fs.existsSync(testDir)) {
+		fs.mkdirSync(testDir, { recursive: true })
+		logger.progress('Created tests/test-cases directory')
+	}
 
-  logger.success(`✓ Test spec generated: ${testFile}`)
+	// Write test file
+	const testFile = path.join(testDir, `${suiteName}.spec.ts`)
+	fs.writeFileSync(testFile, testContent, 'utf-8')
 
-  // Show breakdown
-  logger.section('Test Case Breakdown')
-  const happy = testSuite.testCases.filter((tc) => tc.type === 'Happy Path').length
-  const negative = testSuite.testCases.filter((tc) => tc.type === 'Negative').length
-  const edge = testSuite.testCases.filter((tc) => tc.type === 'Edge Case').length
+	logger.success(`✓ Test spec generated: ${testFile}`)
 
-  logger.bullet(`Happy Path: ${happy} cases`)
-  logger.bullet(`Negative: ${negative} cases`)
-  logger.bullet(`Edge Cases: ${edge} cases`)
+	// Show breakdown
+	logger.section('Test Case Summary')
+	const happy = allTests.filter((tc) => tc.type === 'Happy Path').length
+	const negative = allTests.filter((tc) => tc.type === 'Negative').length
+	const edge = allTests.filter((tc) => tc.type === 'Edge Case').length
 
-  logger.complete(2)
+	logger.bullet(`Total: ${allTests.length} tests`)
+	logger.bullet(`✓ Happy Path: ${happy} tests`)
+	logger.bullet(`✗ Negative: ${negative} tests`)
+	logger.bullet(`⚠ Edge Cases: ${edge} tests`)
+
+	// Show priority breakdown
+	const high = allTests.filter((tc) => tc.priority === 'High').length
+	const medium = allTests.filter((tc) => tc.priority === 'Medium').length
+	const low = allTests.filter((tc) => tc.priority === 'Low').length
+
+	logger.section('Priority Distribution')
+	logger.bullet(`🔴 High: ${high} tests`)
+	logger.bullet(`🟡 Medium: ${medium} tests`)
+	logger.bullet(`🟢 Low: ${low} tests`)
+
+	logger.complete(2)
 }
 
 // CLI Interface
@@ -188,15 +318,28 @@ const jsonIndex = args.indexOf('--json')
 const suiteIndex = args.indexOf('--suite')
 
 if (jsonIndex === -1 || suiteIndex === -1) {
-  logger.error('Missing required arguments')
-  logger.info('Usage: ts-node scripts/generate-tests.ts --json <PATH> --suite <NAME>')
-  process.exit(1)
+	logger.error('Missing required arguments')
+	logger.info(
+		'Usage: ts-node scripts/generate-tests.ts --json <PATH> --suite <NAME>',
+	)
+	logger.info('')
+	logger.info('Example:')
+	logger.info(
+		'  npm run generate:tests -- --json "test-suites/Login_Page-test-cases.json" --suite "Login_Page"',
+	)
+	process.exit(1)
 }
 
 const jsonPath: string | undefined = args[jsonIndex + 1]
 const suite = args[suiteIndex + 1]
 
-generateTestSpecs(jsonPath as string, suite).catch((error) => {
-  logger.error(`Failed to generate tests: ${error.message}`)
-  process.exit(1)
+if (!jsonPath || !suite) {
+	logger.error('JSON path and suite name are required')
+	process.exit(1)
+}
+
+generateTestSpecs(jsonPath, suite).catch((error) => {
+	logger.error(`Failed to generate tests: ${error.message}`)
+	console.error(error.stack)
+	process.exit(1)
 })

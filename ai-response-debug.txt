@@ -1,0 +1,279 @@
+```json
+{
+  "name": "ImageGalleryDemo",
+  "url": "https://demos.telerik.com/aspnet-ajax/imagegallery/",
+  "description": "AI-designed comprehensive test suite based on page analysis",
+  "timestamp": "2025-12-11T16:36:42.666Z",
+  "analysis": {
+    "pageType": "Image Gallery Demo for Trip-Planning WebForms App",
+    "complexity": "Medium",
+    "criticalFlows": [
+      "Search functionality",
+      "Image selection and navigation",
+      "Form submission"
+    ],
+    "riskAreas": [
+      "Input validation",
+      "Hidden field security",
+      "Accessibility",
+      "Performance"
+    ],
+    "recommendedTestCount": "Given the number of inputs and buttons, a thorough test suite will require around 20-25 tests."
+  },
+  "positiveCases": [
+    {
+      "id": "TC-POS-001",
+      "suite": "ImageGalleryDemo",
+      "title": "Search for a destination",
+      "type": "Happy Path",
+      "priority": "High",
+      "preconditions": "User is on the Image Gallery Demo page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Enter a destination name in the search field",
+          "action": "fill",
+          "locator": "#ctl00_MainContent_DestinationsCombo_Input",
+          "value": "Paris"
+        },
+        {
+          "order": 2,
+          "description": "Click the Search button",
+          "action": "click",
+          "locator": "#ctl00_MainContent_SearchButton"
+        }
+      ],
+      "expectedResult": "Search results for 'Paris' are displayed",
+      "testData": {
+        "destination": "Paris"
+      },
+      "status": "Not Run",
+      "comments": "Ensures the search functionality works as expected."
+    },
+    {
+      "id": "TC-POS-002",
+      "suite": "ImageGalleryDemo",
+      "title": "Select an image",
+      "type": "Happy Path",
+      "priority": "High",
+      "preconditions": "User is on the Image Gallery Demo page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Hover over an image",
+          "action": "hover",
+          "locator": "img[src*='paris']"
+        },
+        {
+          "order": 2,
+          "description": "Click the 'select' button",
+          "action": "click",
+          "locator": "button:has-text(\"select\")"
+        }
+      ],
+      "expectedResult": "The selected image is highlighted or marked as selected",
+      "testData": {},
+      "status": "Not Run",
+      "comments": "Ensures the image selection functionality works as expected."
+    },
+    {
+      "id": "TC-POS-003",
+      "suite": "ImageGalleryDemo",
+      "title": "Submit a form",
+      "type": "Happy Path",
+      "priority": "High",
+      "preconditions": "User is on the Image Gallery Demo page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Fill out the form with valid data",
+          "action": "fill",
+          "locator": "#ctl00_MainContent_DestinationsCombo_Input",
+          "value": "New York"
+        },
+        {
+          "order": 2,
+          "description": "Click the 'Search' button",
+          "action": "click",
+          "locator": "#ctl00_MainContent_SearchButton"
+        },
+        {
+          "order": 3,
+          "description": "Submit the form",
+          "action": "click",
+          "locator": "#submitButton"
+        }
+      ],
+      "expectedResult": "Form is successfully submitted and the user is redirected to the next page",
+      "testData": {
+        "destination": "New York"
+      },
+      "status": "Not Run",
+      "comments": "Ensures the form submission functionality works as expected."
+    }
+  ],
+  "negativeCases": [
+    {
+      "id": "TC-NEG-001",
+      "suite": "ImageGalleryDemo",
+      "title": "Search with invalid input",
+      "type": "Negative",
+      "priority": "High",
+      "preconditions": "User is on the Image Gallery Demo page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Enter an invalid destination name in the search field",
+          "action": "fill",
+          "locator": "#ctl00_MainContent_DestinationsCombo_Input",
+          "value": "12345"
+        },
+        {
+          "order": 2,
+          "description": "Click the Search button",
+          "action": "click",
+          "locator": "#ctl00_MainContent_SearchButton"
+        }
+      ],
+      "expectedResult": "An error message is displayed indicating invalid input",
+      "testData": {
+        "invalid_destination": "12345"
+      },
+      "status": "Not Run",
+      "comments": "Ensures the system handles invalid input gracefully."
+    },
+    {
+      "id": "TC-NEG-002",
+      "suite": "ImageGalleryDemo",
+      "title": "Select an image with invalid action",
+      "type": "Negative",
+      "priority": "Medium",
+      "preconditions": "User is on the Image Gallery Demo page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Hover over an image",
+          "action": "hover",
+          "locator": "img[src*='paris']"
+        },
+        {
+          "order": 2,
+          "description": "Click a non-existent 'select' button",
+          "action": "click",
+          "locator": "button:has-text(\"non-existent\")"
+        }
+      ],
+      "expectedResult": "No action is taken and no error message is displayed",
+      "testData": {},
+      "status": "Not Run",
+      "comments": "Ensures the system handles invalid actions gracefully."
+    },
+    {
+      "id": "TC-NEG-003",
+      "suite": "ImageGalleryDemo",
+      "title": "Submit a form with missing required fields",
+      "type": "Negative",
+      "priority": "High",
+      "preconditions": "User is on the Image Gallery Demo page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Click the 'Search' button without entering any data",
+          "action": "click",
+          "locator": "#ctl00_MainContent_SearchButton"
+        }
+      ],
+      "expectedResult": "An error message is displayed indicating that required fields are missing",
+      "testData": {},
+      "status": "Not Run",
+      "comments": "Ensures the system handles missing required fields gracefully."
+    }
+  ],
+  "edgeCases": [
+    {
+      "id": "TC-EDGE-001",
+      "suite": "ImageGalleryDemo",
+      "title": "Search with very long input",
+      "type": "Edge Case",
+      "priority": "Medium",
+      "preconditions": "User is on the Image Gallery Demo page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Enter a very long destination name in the search field",
+          "action": "fill",
+          "locator": "#ctl00_MainContent_DestinationsCombo_Input",
+          "value": "{{LARGE_STRING_500}}"
+        },
+        {
+          "order": 2,
+          "description": "Click the Search button",
+          "action": "click",
+          "locator": "#ctl00_MainContent_SearchButton"
+        }
+      ],
+      "expectedResult": "An error message is displayed indicating that the input is too long",
+      "testData": {
+        "long_destination": "{{LARGE_STRING_500}}"
+      },
+      "status": "Not Run",
+      "comments": "Ensures the system handles very long inputs gracefully."
+    },
+    {
+      "id": "TC-EDGE-002",
+      "suite": "ImageGalleryDemo",
+      "title": "Select an image with special characters",
+      "type": "Edge Case",
+      "priority": "Medium",
+      "preconditions": "User is on the Image Gallery Demo page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Hover over an image",
+          "action": "hover",
+          "locator": "img[src*='paris']"
+        },
+        {
+          "order": 2,
+          "description": "Click the 'select' button with special characters in the name",
+          "action": "click",
+          "locator": "button:has-text(\"select!@#$%^&*()_+-=[]{}|;:',.<>?\")"
+        }
+      ],
+      "expectedResult": "No action is taken and no error message is displayed",
+      "testData": {},
+      "status": "Not Run",
+      "comments": "Ensures the system handles special characters gracefully."
+    },
+    {
+      "id": "TC-EDGE-003",
+      "suite": "ImageGalleryDemo",
+      "title": "Submit a form with XSS payload",
+      "type": "Edge Case",
+      "priority": "High",
+      "preconditions": "User is on the Image Gallery Demo page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Enter an XSS payload in the form fields",
+          "action": "fill",
+          "locator": "#ctl00_MainContent_DestinationsCombo_Input",
+          "value": "<script>alert('XSS')</script>"
+        },
+        {
+          "order": 2,
+          "description": "Submit the form",
+          "action": "click",
+          "locator": "#submitButton"
+        }
+      ],
+      "expectedResult": "The XSS payload is sanitized and no alert is displayed",
+      "testData": {
+        "xss_payload": "<script>alert('XSS')</script>"
+      },
+      "status": "Not Run",
+      "comments": "Ensures the system handles XSS payloads securely."
+    }
+  ]
+}
+```

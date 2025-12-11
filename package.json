@@ -7,6 +7,7 @@
     "generate:locators": "ts-node scripts/generate-locators.ts",
     "generate:pages": "ts-node scripts/generate-pages.ts",
     "generate:tests": "ts-node scripts/generate-tests.ts",
+    "scan:syntax": "ts-node scripts/validation_syntax.ts",
     "analyze:failures": "ts-node scripts/analyze-failures.ts",
     "auto-fix": "ts-node scripts/auto-fix.ts",
     "generate:report": "ts-node scripts/generate-report.ts",

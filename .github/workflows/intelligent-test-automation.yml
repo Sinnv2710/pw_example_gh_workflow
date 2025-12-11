@@ -241,7 +241,31 @@ jobs:
           echo ""
           echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ Generated $TEST_FILES test spec files"
 
-      - name: 💾 Commit Generated Files
+      - name: 🔍 STEP 6 - Scan Syntax Files
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          echo ""
+          echo "================================================"
+          echo "🔍 STEP 6 - Scan Syntax Files"
+          echo "================================================"
+          echo "🤖 Using: Amazon Nova 2 Lite for code review"
+          echo ""
+
+          TEST_FILE="tests/test-cases/${{ steps.normalize.outputs.normalized_name }}.spec.ts"
+
+          if [ -f "$TEST_FILE" ]; then
+            npm run scan:syntax -- --file "$TEST_FILE"
+            
+            echo ""
+            echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ Test code verified and fixed"
+          else
+            echo "⚠️ Warning: Test file not found at $TEST_FILE"
+          fi
+
+          echo ""
+
+      - name: 💾 Commit Generataed Files
         run: |
           echo ""
           echo "================================================"
