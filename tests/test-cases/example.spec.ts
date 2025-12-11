@@ -62,7 +62,7 @@ test.describe('Centralized Locator Pattern Examples', () => {
 	})
 
 	test.skip('Example 3: Debug mode for troubleshooting', async ({ page }) => {
-		const inputsPage = new InputsPage(page, { debug: true })
+		const inputsPage = new InputsPage(page)
 
 		// With debug enabled, LocatorHelper logs all locator resolution attempts
 		await inputsPage.open()
