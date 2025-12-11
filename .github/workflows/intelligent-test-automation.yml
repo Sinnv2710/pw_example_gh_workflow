@@ -3,12 +3,12 @@ name: Intelligent Playwright Test Automation
 on:
   workflow_dispatch:
     inputs:
-      website_url:
+      website_url.default:
         description: "Website URL to test"
         required: true
         type: string
         default: "https://demos.telerik.com/aspnet-ajax/grid/examples/overview/defaultcs.aspx"
-      test_suite_name:
+      test_suite_name.default:
         description: "Test suite name (e.g., login, checkout)"
         required: true
         type: string
@@ -44,9 +44,9 @@ jobs:
       - name: 🔄 Normalize Test Suite Name
         id: normalize
         run: |
-          NORMALIZED_NAME=$(echo "${{ inputs.test_suite_name }}" | sed 's/ /_/g')
+          NORMALIZED_NAME=$(echo "${{ inputs.test_suite_name.default }}" | sed 's/ /_/g')
           echo "normalized_name=$NORMALIZED_NAME" >> $GITHUB_OUTPUT
-          echo "Original: ${{ inputs.test_suite_name }}"
+          echo "Original: ${{ inputs.test_suite_name.default }}"
           echo "Normalized: $NORMALIZED_NAME"
 
       - name: 📦 Install Dependencies (or restore from cache)
@@ -61,8 +61,8 @@ jobs:
           echo "================================================"
           echo "🔍 STEP 1: WEBSITE EXPLORATION"
           echo "================================================"
-          echo "📍 Target URL: ${{ inputs.website_url }}"
-          echo "📝 Test Suite: ${{ inputs.test_suite_name }}"
+          echo "📍 Target URL: ${{ inputs.website_url.default }}"
+          echo "📝 Test Suite: ${{ inputs.test_suite_name.default }}"
           echo ""
           echo "[$(date +'%Y-%m-%d %H:%M:%S')] Starting exploration..."
 
@@ -78,8 +78,8 @@ jobs:
             const browser = await chromium.launch();
             const page = await browser.newPage();
             
-            console.log(`[${timestamp()}] 📍 Navigating to: ${{ inputs.website_url }}`);
-            await page.goto('${{ inputs.website_url }}');
+            console.log(`[${timestamp()}] 📍 Navigating to: ${{ inputs.website_url.default }}`);
+            await page.goto('${{ inputs.website_url.default }}');
             
             console.log(`[${timestamp()}] ✓ Page loaded`);
             console.log(`[${timestamp()}] 📸 Taking snapshot...`);
@@ -128,7 +128,7 @@ jobs:
           echo "================================================"
 
           npm run generate:csv -- \
-            --url "${{ inputs.website_url }}" \
+            --url "${{ inputs.website_url.default }}" \
             --suite "${{ steps.normalize.outputs.normalized_name }}"
 
           if [ -f "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv" ]; then
@@ -206,7 +206,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "⚠️ No changes to commit"
           else
-            git commit -m "Generate tests for ${{ inputs.test_suite_name }} - Explored ${{ inputs.website_url }} - Generated test cases CSV, locators, page objects, and test specs - Run #${{ github.run_number }}"
+            git commit -m "Generate tests for ${{ inputs.test_suite_name.default }} - Explored ${{ inputs.website_url.default }} - Generated test cases CSV, locators, page objects, and test specs - Run #${{ github.run_number }}"
             git push
             echo "✓ Files committed and pushed"
           fi
@@ -217,7 +217,7 @@ jobs:
           echo "================================================"
 
     outputs:
-      # test-suite-name: ${{ inputs.test_suite_name }}
+      # test-suite-name: ${{ inputs.test_suite_name.default }}
       test-suite-name: ${{ steps.normalize.outputs.normalized_name }}
 
   # =========================================
@@ -500,7 +500,7 @@ jobs:
           echo ""
           echo "📋 Summary:"
           echo "   - Test Suite: ${{ needs.explore-and-generate.outputs.test-suite-name }}"
-          echo "   - Website: ${{ inputs.website_url }}"
+          echo "   - Website: ${{ inputs.website_url.default }}"
           echo "   - CSV: Updated with results"
           echo "   - Report: Generated"
           echo "   - Analysis: Complete"
