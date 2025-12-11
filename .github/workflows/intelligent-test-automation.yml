@@ -37,6 +37,14 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
+      - name: 🔄 Normalize Test Suite Name
+        id: normalize
+        run: |
+          NORMALIZED_NAME=$(echo "${{ inputs.test_suite_name }}" | sed 's/ /_/g')
+          echo "normalized_name=$NORMALIZED_NAME" >> $GITHUB_OUTPUT
+          echo "Original: ${{ inputs.test_suite_name }}"
+          echo "Normalized: $NORMALIZED_NAME"
+
       - name: 📦 Install Dependencies
         run: |
           echo "================================================"
@@ -44,7 +52,6 @@ jobs:
           echo "================================================"
           npm install
           npx playwright install --with-deps chromium
-          echo "✓ Dependencies installed"
 
       - name: 🤖 STEP 1 - Explore Website
         id: explore
@@ -121,18 +128,18 @@ jobs:
 
           npm run generate:csv -- \
             --url "${{ inputs.website_url }}" \
-            --suite "${{ inputs.test_suite_name }}"
+            --suite "${{ steps.normalize.outputs.normalized_name }}"
 
-          if [ -f "test-suites/${{ inputs.test_suite_name }}-test-cases.csv" ]; then
-            TEST_COUNT=$(tail -n +2 "test-suites/${{ inputs.test_suite_name }}-test-cases.csv" | wc -l)
+          if [ -f "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv" ]; then
+            TEST_COUNT=$(tail -n +2 "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv" | wc -l)
             echo ""
             echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ Generated $TEST_COUNT test cases"
             echo ""
             echo "📊 Test Case Breakdown:"
             
-            HAPPY=$(grep -c "Happy Path" "test-suites/${{ inputs.test_suite_name }}-test-cases.csv" || echo "0")
-            NEGATIVE=$(grep -c "Negative" "test-suites/${{ inputs.test_suite_name }}-test-cases.csv" || echo "0")
-            EDGE=$(grep -c "Edge Case" "test-suites/${{ inputs.test_suite_name }}-test-cases.csv" || echo "0")
+            HAPPY=$(grep -c "Happy Path" "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv" || echo "0")
+            NEGATIVE=$(grep -c "Negative" "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv" || echo "0")
+            EDGE=$(grep -c "Edge Case" "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv" || echo "0")
             
             echo "   - Happy Path: $HAPPY cases"
             echo "   - Negative: $NEGATIVE cases"
@@ -148,7 +155,7 @@ jobs:
           echo "================================================"
 
           npm run generate:locators -- \
-            --suite "${{ inputs.test_suite_name }}"
+            --suite "${{ steps.normalize.outputs.normalized_name }}"
 
           echo ""
 
@@ -161,7 +168,7 @@ jobs:
           echo "================================================"
 
           npm run generate:pages -- \
-            --suite "${{ inputs.test_suite_name }}"
+            --suite "${{ steps.normalize.outputs.normalized_name }}"
 
           echo ""
 
@@ -174,20 +181,12 @@ jobs:
           echo "================================================"
 
           npm run generate:tests -- \
-            --suite "${{ inputs.test_suite_name }}" \
-            --csv "test-suites/${{ inputs.test_suite_name }}-test-cases.csv"
+            --suite "${{ steps.normalize.outputs.normalized_name }}" \
+            --csv "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv"
 
-          TEST_FILES=$(find tests/test-cases -name "*${{ inputs.test_suite_name }}*.spec.ts" 2>/dev/null | wc -l)
+          TEST_FILES=$(find tests/test-cases -name "*${{ steps.normalize.outputs.normalized_name }}*.spec.ts" 2>/dev/null | wc -l)
           echo ""
           echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ Generated $TEST_FILES test spec files"
-
-      - name: 🔄 Normalize Test Suite Name
-        id: normalize
-        run: |
-          NORMALIZED_NAME=$(echo "${{ inputs.test_suite_name }}" | sed 's/ /_/g')
-          echo "normalized_name=$NORMALIZED_NAME" >> $GITHUB_OUTPUT
-          echo "Original: ${{ inputs.test_suite_name }}"
-          echo "Normalized: $NORMALIZED_NAME"
 
       - name: 💾 Commit Generated Files
         run: |
@@ -217,7 +216,8 @@ jobs:
           echo "================================================"
 
     outputs:
-      test-suite-name: ${{ inputs.test_suite_name }}
+      # test-suite-name: ${{ inputs.test_suite_name }}
+      test-suite-name: ${{ steps.normalize.outputs.normalized_name }}
 
   # =========================================
   # STEP 6: Run Tests
@@ -240,13 +240,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 📦 Install Dependencies
-        run: |
-          echo "================================================"
-          echo "📦 INSTALLING DEPENDENCIES"
-          echo "================================================"
-          npm install
-          npx playwright install --with-deps
+      - name: 📦 Cache Node Modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ env.NODE_VERSION }}-
+
+      - name: 📦 Install Dependencies (or restore from cache)
+        run: npm ci
 
       - name: 🧪 STEP 6 - Execute Tests
         id: run-tests
@@ -331,8 +334,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 📦 Install Dependencies
-        run: npm install
+      - name: 📦 Cache Node Modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ env.NODE_VERSION }}-
+
+      - name: 📦 Install Dependencies (or restore from cache)
+        run: npm ci
 
       - name: 📥 Download Test Results
         uses: actions/download-artifact@v4
@@ -410,8 +421,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 📦 Install Dependencies
-        run: npm install
+      - name: 📦 Cache Node Modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ env.NODE_VERSION }}-
+
+      - name: 📦 Install Dependencies (or restore from cache)
+        run: npm ci
 
       - name: 📥 Download Test Results
         uses: actions/download-artifact@v4
