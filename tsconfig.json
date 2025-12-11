@@ -1,57 +1,26 @@
 {
-  "ts-node": {
-    "files": true
-  },
   "compilerOptions": {
-    /* Language and Environment */
     "target": "ES2020",
-    "lib": ["ES2020", "DOM"],
-    "module": "CommonJS",
-    
-    /* Module Resolution */
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    
-    /* Type Checking */
+    "module": "commonjs",
+    "lib": ["ES2020"],
+    "outDir": "./dist",
+    "rootDir": "./",
     "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    
-    /* Emit */
-    "declaration": true,
-    "removeComments": true,
-    "noEmit": true,
-    "inlineSourceMap": true,
-    "isolatedModules": true,
-    
-    /* Interop Constraints */
-    "allowJs": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    
-    /* Advanced */
-    "skipLibCheck": true
+    "resolveJsonModule": true,
+    "types": ["node", "@playwright/test"]
   },
   "include": [
-    "**/*.ts",
-    "**/*.spec.ts"
+    "tests/**/*",
+    "locators/**/*",
+    "utils/**/*",
+    "scripts/**/*"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "build",
-    "playwright-report",
     "test-results"
   ]
 }

@@ -149,10 +149,10 @@ export class ExamplePage extends BasePage {
   /**
    * PATTERN SUMMARY:
    * 
-   * 1. Import locators: import { PAGE_LOCATORS } from '../../locators';
-   * 2. Use getters: private get element() { return this.locatorHelper.getLocatorSync(LOCATOR); }
-   * 3. Create actions: async doAction() { await this.element.click(); }
-   * 4. Keep it clean: No hardcoded selectors anywhere!
+   * 1.Import locators: import { PAGE_LOCATORS } from '../../locators';
+   * 2.Use getters: private get element() { return this.locatorHelper.getLocatorSync(LOCATOR); }
+   * 3.Create actions: async doAction() { await this.element.click(); }
+   * 4.Keep it clean: No hardcoded selectors anywhere!
    * 
    * BENEFITS:
    * - Easy to maintain: Change selector once, works everywhere
