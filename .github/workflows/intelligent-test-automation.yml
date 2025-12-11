@@ -40,7 +40,7 @@ jobs:
           echo "================================================"
           echo "📦 INSTALLING DEPENDENCIES"
           echo "================================================"
-          npm ci
+          npm install
           npx playwright install --with-deps chromium
           echo "✓ Dependencies installed"
 
@@ -233,7 +233,7 @@ jobs:
           echo "================================================"
           echo "📦 INSTALLING DEPENDENCIES"
           echo "================================================"
-          npm ci
+          npm install
           npx playwright install --with-deps
 
       - name: 🧪 STEP 6 - Execute Tests
@@ -318,7 +318,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: 📥 Download Test Results
         uses: actions/download-artifact@v4
@@ -397,7 +397,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm install
 
       - name: 📥 Download Test Results
         uses: actions/download-artifact@v4
