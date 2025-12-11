@@ -44,10 +44,20 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          # echo "WEBSITE_URL=${{ inputs.website_url }}" >> $GITHUB_ENV
-          # echo "TEST_SUITE_NAME=${{ inputs.test_suite_name }}" >> $GITHUB_ENV
-          echo "WEBSITE_URL=${{ env.WEBSITE_URL }}" >> $GITHUB_ENV
-          echo "TEST_SUITE_NAME=${{ env.TEST_SUITE_NAME }}" >> $GITHUB_ENV
+          # Use inputs if provided (workflow_dispatch), otherwise fall back to env defaults
+           WEBSITE_URL="${{ inputs.website_url }}"
+           TEST_SUITE_NAME="${{ inputs.test_suite_name }}"
+           
+           # If inputs are empty, use env defaults
+           if [ -z "$WEBSITE_URL" ]; then
+             WEBSITE_URL="${{ env.WEBSITE_URL }}"
+           fi
+           if [ -z "$TEST_SUITE_NAME" ]; then
+             TEST_SUITE_NAME="${{ env.TEST_SUITE_NAME }}"
+           fi
+           
+           echo "WEBSITE_URL=$WEBSITE_URL" >> $GITHUB_ENV
+           echo "TEST_SUITE_NAME=$TEST_SUITE_NAME" >> $GITHUB_ENV
 
       - name: 🔄 Normalize Test Suite Name
         id: normalize
@@ -269,42 +279,30 @@ jobs:
           echo "================================================"
           echo "▶️ STEP 6: RUNNING PLAYWRIGHT TESTS"
           echo "================================================"
-          echo "[$(date +'%Y-%m-%d %H:%M:%S')] Starting test execution..."
-          echo "   - Trace:  ENABLED"
-          echo "   - Screenshots: ON FAILURE"
-          echo "   - Videos: ON FAILURE"
-          echo ""
 
           npx playwright test \
             --trace on \
             --reporter=html,json,list \
-            2>&1 | tee test-execution.log
-
-          TEST_EXIT_CODE=$?
-
-          echo ""
-          echo "[$(date +'%Y-%m-%d %H:%M:%S')] Test execution finished"
+            2>&1 | tee test-execution.log || TEST_EXIT_CODE=$?
 
           if [ -f "test-results/results.json" ]; then
             echo ""
             echo "📊 TEST RESULTS SUMMARY:"
-            
-            TOTAL=$(grep -o '"title"' test-results/results.json | wc -l)
-            PASSED=$(grep -c '"ok":  true' test-results/results.json || echo "0")
-            FAILED=$(grep -c '"ok": false' test-results/results.json || echo "0")
+            # Use jq if available, else grep
+            if command -v jq &> /dev/null; then
+              PASSED=$(jq '[.[] | select(.ok == true)] | length' test-results/results.json)
+              FAILED=$(jq '[.[] | select(.ok == false)] | length' test-results/results.json)
+              TOTAL=$(jq 'length' test-results/results.json)
+            else
+              TOTAL=$(grep -o '"title"' test-results/results.json | wc -l)
+              PASSED=$(grep -c '"ok": true' test-results/results.json || echo "0")
+              FAILED=$(grep -c '"ok": false' test-results/results.json || echo "0")
+            fi
             
             echo "   Total Tests: $TOTAL"
             echo "   ✓ Passed: $PASSED"
             echo "   ✗ Failed: $FAILED"
-            
-            if [ $TOTAL -gt 0 ]; then
-              SUCCESS_RATE=$(awk "BEGIN {printf \"%.1f\", ($PASSED/$TOTAL)*100}")
-              echo "   Success Rate: $SUCCESS_RATE%"
-            fi
           fi
-
-          echo ""
-          echo "✓ STEP 6 COMPLETE"
 
           exit 0
         continue-on-error: true
