@@ -44,8 +44,10 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          echo "WEBSITE_URL=${{ inputs.website_url }}" >> $GITHUB_ENV
-          echo "TEST_SUITE_NAME=${{ inputs.test_suite_name }}" >> $GITHUB_ENV
+          # echo "WEBSITE_URL=${{ inputs.website_url }}" >> $GITHUB_ENV
+          # echo "TEST_SUITE_NAME=${{ inputs.test_suite_name }}" >> $GITHUB_ENV
+          echo "WEBSITE_URL=${{ env.WEBSITE_URL }}" >> $GITHUB_ENV
+          echo "TEST_SUITE_NAME=${{ env.TEST_SUITE_NAME }}" >> $GITHUB_ENV
 
       - name: 🔄 Normalize Test Suite Name
         id: normalize
