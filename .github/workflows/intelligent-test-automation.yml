@@ -23,6 +23,8 @@ jobs:
   explore-and-generate:
     name: 🔍 Explore & Generate Tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: 📋 Checkout Repository
@@ -216,6 +218,8 @@ jobs:
     name: ▶️ Run Tests
     needs: explore-and-generate
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: 📋 Checkout Repository
@@ -305,6 +309,8 @@ jobs:
     needs: run-tests
     if: always()
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: 📋 Checkout Repository
