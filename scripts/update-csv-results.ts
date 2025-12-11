@@ -59,7 +59,7 @@ async function updateCSV(csvPath: string, resultsPath: string): Promise<void> {
   const updatedLines = [lines[0]]; // Keep header
   
   for (let i = 1; i < lines.length; i++) {
-    if (! lines[i].trim()) continue;
+    if (!lines[i].trim()) continue;
     
     const values = parseCSVLine(lines[i]);
     const testId = values[0];
