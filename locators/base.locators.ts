@@ -24,7 +24,7 @@ export const BASE_LOCATORS = {
 	},
 	NAVIGATION: {
 		HEADER: {
-			primary: 'header. main-header',
+			primary: 'header.main-header',
 			fallback: 'header',
 			description: 'Main header/navigation',
 		},
