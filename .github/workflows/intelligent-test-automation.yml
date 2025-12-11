@@ -54,7 +54,9 @@ jobs:
             ${{ runner.os }}-node-${{ env.NODE_VERSION }}-
 
       - name: 📦 Install Dependencies (or restore from cache)
-        run: npm ci
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
 
       - name: 🤖 STEP 1 - Explore Website
         id: explore
@@ -252,7 +254,9 @@ jobs:
             ${{ runner.os }}-node-${{ env.NODE_VERSION }}-
 
       - name: 📦 Install Dependencies (or restore from cache)
-        run: npm ci
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
 
       - name: 🧪 STEP 6 - Execute Tests
         id: run-tests
