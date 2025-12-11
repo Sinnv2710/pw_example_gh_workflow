@@ -76,7 +76,7 @@ export const ${constantName} = {
   CONTAINERS: {
     MAIN: {
       primary: '.main-container',
-      fallback:  'main',
+      fallback: 'main',
       description: 'Main content container'
     }
   }
