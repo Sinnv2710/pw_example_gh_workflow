@@ -45,13 +45,16 @@ jobs:
           echo "Original: ${{ inputs.test_suite_name }}"
           echo "Normalized: $NORMALIZED_NAME"
 
-      - name: 📦 Install Dependencies
-        run: |
-          echo "================================================"
-          echo "📦 INSTALLING DEPENDENCIES"
-          echo "================================================"
-          npm install
-          npx playwright install --with-deps chromium
+      - name: 📦 Cache Node Modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ env.NODE_VERSION }}-
+
+      - name: 📦 Install Dependencies (or restore from cache)
+        run: npm ci
 
       - name: 🤖 STEP 1 - Explore Website
         id: explore
