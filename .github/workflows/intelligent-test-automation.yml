@@ -181,6 +181,14 @@ jobs:
           echo ""
           echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ Generated $TEST_FILES test spec files"
 
+      - name: 🔄 Normalize Test Suite Name
+        id: normalize
+        run: |
+          NORMALIZED_NAME=$(echo "${{ inputs.test_suite_name }}" | sed 's/ /_/g')
+          echo "normalized_name=$NORMALIZED_NAME" >> $GITHUB_OUTPUT
+          echo "Original: ${{ inputs.test_suite_name }}"
+          echo "Normalized: $NORMALIZED_NAME"
+
       - name: 💾 Commit Generated Files
         run: |
           echo ""
@@ -433,7 +441,7 @@ jobs:
           echo "📝 STEP 10: UPDATING TEST CASES CSV"
           echo "================================================"
 
-          npm run update: csv -- \
+          npm run update:csv -- \
             --csv "test-suites/${{ needs.explore-and-generate.outputs.test-suite-name }}-test-cases.csv" \
             --results "test-results/results.json"
 
