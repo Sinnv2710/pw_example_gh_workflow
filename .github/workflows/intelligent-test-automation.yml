@@ -7,10 +7,14 @@ on:
         description: "Website URL to test"
         required: true
         type: string
+        default: "https://demos.telerik.com/aspnet-ajax/grid/examples/overview/defaultcs.aspx"
       test_suite_name:
         description: "Test suite name (e.g., login, checkout)"
         required: true
         type: string
+        default: "WebForms"
+  push:
+    branches: [test_pipeline]      
 
 env:
   NODE_VERSION: "20"
