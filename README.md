@@ -1,16 +1,19 @@
-# Playwright Test Automation Framework
+# Intelligent Playwright Test Automation Framework
 
-A production-ready Playwright test automation framework featuring **centralized locator management** for maintainable, scalable, and reliable test automation.
+A production-ready Playwright test automation framework with **JSON-based test generation**, **centralized locator management**, and **intelligent test exploration** for maintainable, scalable E2E testing.
 
 ## 🎯 Key Features
 
-- **Centralized Locator Management**: All selectors stored in dedicated files, never hardcoded
-- **Automatic Fallback**: Smart locator resolution tries multiple strategies
-- **Type-Safe**: Full TypeScript support with strict mode
-- **Page Object Pattern**: Clean separation of concerns
-- **Comprehensive Reporting**: HTML, JSON, and JUnit reports
-- **CI/CD Ready**: GitHub Actions workflow included
-- **Trace & Debug**: Built-in debugging with Playwright traces
+- **🤖 Intelligent Test Generation**: Auto-generates test cases from website exploration
+- **📋 JSON Test Case Management**: Structured, maintainable test data (no more CSV!)
+- **🎯 Centralized Locator Management**: All selectors stored in dedicated files
+- **🔄 Automatic Fallback**: Smart locator resolution with multiple strategies
+- **🛡️ Type-Safe**: Full TypeScript support with strict mode
+- **📦 Page Object Pattern**: Clean separation of concerns
+- **📊 Comprehensive Reporting**: HTML, JSON, and JUnit reports
+- **🚀 CI/CD Ready**: GitHub Actions workflow with parallel execution
+- **🔍 Trace & Debug**: Built-in debugging with Playwright traces
+- **🧪 Test Categories**: Organized positive, negative, and edge case tests
 
 ## 🚀 Quick Start
 
@@ -39,15 +42,39 @@ npm test
 ## 📁 Project Structure
 
 ```
+├── .github/workflows/           # CI/CD pipelines
+│   └── intelligent-test-automation.yml
+│
+├── core/                        # Core framework components
+│   ├── api/                    # API testing utilities
+│   ├── pages/                  # Page Object Models
+│   │   ├── inputsPage.ts
+│   │   └── loginPage.ts
+│   ├── testcases/              # JSON test case definitions
+│   │   ├── Inputs_Page/
+│   │   └── Login_Page/
+│   └── basePage.ts             # Base page class
+│
+├── scripts/                     # Test automation scripts
+│   ├── generate-tests-json.ts  # Generate test cases from website
+│   ├── generate-locators.ts    # Extract locators from pages
+│   ├── generate-pages.ts       # Generate Page Objects
+│   ├── generate-tests.ts       # Create test specs from JSON
+│   ├── analyze-failures.ts     # Analyze test failures
+│   └── logger.ts               # Logging utility
+│
+├── test-suites/                # Generated test case JSON files
+│   └── Login_Page-test-cases.json
+│
 ├── locators/                    # Centralized locator definitions
-│   ├── base.locators.ts        # Common elements (loading, errors, navigation)
+│   ├── base.locators.ts        # Common elements
 │   ├── inputs.locators.ts      # Page-specific locators
 │   └── index.ts                # Central export
 │
 ├── utils/                       # Utility functions
-│   └── locator-helper.ts       # Smart locator resolution with fallback
+│   └── locator-helper.ts       # Smart locator resolution
 │
-├── tests/
+├── tests/                       # Test files and Page Objects
 │   ├── pages/                  # Page Object Models
 │   │   ├── BasePage.ts        # Base class for all pages
 │   │   ├── InputsPage.ts      # Example page using centralized locators

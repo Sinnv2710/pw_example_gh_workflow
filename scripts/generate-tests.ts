@@ -1,9 +1,9 @@
 #!/usr/bin/env ts-node
 
 /**
- * Test Specification Generation Script
+ * Test Generation Script
  *
- * Generates Playwright test specs from CSV test cases
+ * Generates Playwright test specs from JSON test cases
  */
 
 import * as fs from 'fs'
@@ -12,136 +12,191 @@ import { Logger } from './logger'
 
 const logger = new Logger('Test Generation')
 
-/**
- * Generate test spec file from CSV
- */
-async function generateTestSpecs(
-	suiteName: string,
-	csvPath: string,
-): Promise<void> {
-	logger.header('🧪 GENERATING TEST SPECIFICATIONS')
+interface TestStep {
+  order: number
+  description: string
+  action: string
+  locator?: string
+  value?: string
+}
 
-	logger.info(`Test Suite: ${suiteName}`)
-	logger.info(`CSV File: ${csvPath}`)
-	logger.progress('Creating Playwright test specs...')
+interface TestCase {
+  id: string
+  suite: string
+  title: string
+  type: 'Happy Path' | 'Negative' | 'Edge Case'
+  priority: 'High' | 'Medium' | 'Low'
+  preconditions: string
+  steps: TestStep[]
+  expectedResult: string
+  testData: Record<string, any>
+  status: 'Not Run' | 'Pass' | 'Fail' | 'Flaky'
+  comments: string
+}
 
-	// Read CSV file
-	if (!fs.existsSync(csvPath)) {
-		throw new Error(`CSV file not found: ${csvPath}`)
-	}
-
-	const csvContent = fs.readFileSync(csvPath, 'utf-8')
-	const testCases = parseCSV(csvContent)
-
-	// Create test-cases directory
-	const testCasesDir = path.join(process.cwd(), 'tests', 'test-cases')
-	if (!fs.existsSync(testCasesDir)) {
-		fs.mkdirSync(testCasesDir, { recursive: true })
-	}
-
-	// Generate test content
-	const testContent = generateTestContent(suiteName, testCases)
-	const testPath = path.join(testCasesDir, `${suiteName}.spec.ts`)
-
-	fs.writeFileSync(testPath, testContent, 'utf-8')
-
-	logger.success(`Generated test spec: tests/test-cases/${suiteName}.spec.ts`)
-	logger.bullet(`Created ${testCases.length} test cases`)
-
-	logger.complete(5)
+interface TestSuite {
+  name: string
+  url: string
+  description: string
+  timestamp: string
+  testCases: TestCase[]
 }
 
 /**
- * Parse CSV content into test case objects
+ * Parse JSON test cases file
  */
-function parseCSV(csvContent: string): any[] {
-	const lines = csvContent.split('\n')
-	const headers = lines[0].split(',')
-	const testCases: any[] = []
+function loadTestCases(jsonPath: string): TestSuite {
+  logger.progress(`📖 Loading test cases from: ${jsonPath}`)
 
-	for (let i = 1; i < lines.length; i++) {
-		if (!lines[i].trim()) continue
+  if (!fs.existsSync(jsonPath)) {
+    logger.error(`File not found: ${jsonPath}`)
+    process.exit(1)
+  }
 
-		const values = lines[i].split(',')
-		const testCase: any = {}
+  const content = fs.readFileSync(jsonPath, 'utf-8')
+  const testSuite: TestSuite = JSON.parse(content)
 
-		headers.forEach((header, index) => {
-			testCase[header.trim()] = values[index]?.replace(/^"|"$/g, '').trim()
-		})
-
-		testCases.push(testCase)
-	}
-
-	return testCases
+  logger.success(`✓ Loaded ${testSuite.testCases.length} test cases`)
+  return testSuite
 }
 
 /**
- * Generate test file content
+ * Map step action to Playwright code
  */
-function generateTestContent(suiteName: string, testCases: any[]): string {
-	const className = capitalize(suiteName) + 'Page'
+function mapActionToPlaywright(step: TestStep): string {
+  const { action, locator, value } = step
 
-	let content = `import { test, expect } from '@playwright/test';
-import { ${className} } from '../pages/${className}';
+  switch (action.toLowerCase()) {
+    case 'fill':
+      return `await page.locator('${locator}').fill('${value}')`
+    case 'click':
+      return `await page.locator('${locator}').click()`
+    case 'check':
+      return `await page.locator('${locator}').check()`
+    case 'uncheck':
+      return `await page.locator('${locator}').uncheck()`
+    case 'select':
+      return `await page.locator('${locator}').selectOption('${value}')`
+    case 'type':
+      return `await page.locator('${locator}').type('${value}')`
+    case 'wait':
+      return `await page.waitForTimeout(${value})`
+    case 'navigate':
+      return `await page.goto('${value}')`
+    case 'assert_visible':
+      return `await expect(page.locator('${locator}')).toBeVisible()`
+    case 'assert_text':
+      return `await expect(page.locator('${locator}')).toContainText('${value}')`
+    case 'assert_url':
+      return `await expect(page).toHaveURL('${value}')`
+    default:
+      return `// TODO: Implement action: ${action}`
+  }
+}
 
 /**
- * ${suiteName} Test Suite
- * 
- * Auto-generated from CSV test cases
+ * Generate test file content from test cases
  */
-test.describe('${suiteName} Tests', () => {
-  let ${suiteName}Page: ${className};
+function generateTestContent(testSuite: TestSuite): string {
+  const importSection = `import { test, expect } from '@playwright/test'
+import { BasePage } from '../pages/BasePage'
+
+test.describe('${testSuite.name} - Test Suite', () => {
+  let basePage: BasePage
 
   test.beforeEach(async ({ page }) => {
-    ${suiteName}Page = new ${className}(page);
-    await ${suiteName}Page.goto();
-  });
+    basePage = new BasePage(page)
+    await page.goto('${testSuite.url}')
+  })
 
 `
 
-	testCases.forEach((tc) => {
-		content += `
-  test('${tc['Test ID']}:  ${tc['Test Case Title']}', async ({ page }) => {
-    // Test Type:  ${tc['Test Type']}
-    // Priority: ${tc['Priority']}
+  const testCases = testSuite.testCases.map((tc) => {
+    const steps = tc.steps
+      .sort((a, b) => a.order - b.order)
+      .map((step) => {
+        const action = mapActionToPlaywright(step)
+        return `    console.log('${step.order}. ${step.description}')\n    ${action}`
+      })
+      .join('\n\n')
+
+    return `  test('${tc.id} - ${tc.title}', async ({ page }) => {
+    // Type: ${tc.type} | Priority: ${tc.priority}
+    // Preconditions: ${tc.preconditions}
     
-    // TODO:  Implement test steps: 
-    // ${tc['Test Steps']?.replace(/\\n/g, '\n    // ')}
-    
-    // Expected Result: ${tc['Expected Result']}
-  });
+${steps}
+
+    // Expected Result: ${tc.expectedResult}
+    console.log('✓ Test completed: ${tc.expectedResult}')
+  })
 `
-	})
+  })
 
-	content += '});\n'
+  const closingSection = `})`
 
-	return content
+  return importSection + testCases.join('\n') + closingSection
 }
 
 /**
- * Capitalize first letter
+ * Generate test spec files from JSON test cases
  */
-function capitalize(str: string): string {
-	return str.charAt(0).toUpperCase() + str.slice(1)
+async function generateTestSpecs(
+  jsonPath: string,
+  suiteName: string,
+): Promise<void> {
+  logger.header('🧪 GENERATING TEST SPECIFICATIONS')
+
+  // Load test cases from JSON
+  const testSuite = loadTestCases(jsonPath)
+
+  logger.info(`Suite: ${testSuite.name}`)
+  logger.info(`URL: ${testSuite.url}`)
+  logger.info(`Test Cases: ${testSuite.testCases.length}`)
+
+  // Generate test content
+  const testContent = generateTestContent(testSuite)
+
+  // Create test directory
+  const testDir = path.join(process.cwd(), 'tests', 'test-cases')
+  if (!fs.existsSync(testDir)) {
+    fs.mkdirSync(testDir, { recursive: true })
+    logger.progress('Created tests/test-cases directory')
+  }
+
+  // Write test file
+  const testFile = path.join(testDir, `${suiteName}.spec.ts`)
+  fs.writeFileSync(testFile, testContent, 'utf-8')
+
+  logger.success(`✓ Test spec generated: ${testFile}`)
+
+  // Show breakdown
+  logger.section('Test Case Breakdown')
+  const happy = testSuite.testCases.filter((tc) => tc.type === 'Happy Path').length
+  const negative = testSuite.testCases.filter((tc) => tc.type === 'Negative').length
+  const edge = testSuite.testCases.filter((tc) => tc.type === 'Edge Case').length
+
+  logger.bullet(`Happy Path: ${happy} cases`)
+  logger.bullet(`Negative: ${negative} cases`)
+  logger.bullet(`Edge Cases: ${edge} cases`)
+
+  logger.complete(2)
 }
 
 // CLI Interface
 const args = process.argv.slice(2)
+const jsonIndex = args.indexOf('--json')
 const suiteIndex = args.indexOf('--suite')
-const csvIndex = args.indexOf('--csv')
 
-if (suiteIndex === -1 || csvIndex === -1) {
-	logger.error('Missing required arguments')
-	logger.info(
-		'Usage: ts-node scripts/generate-tests.ts --suite <NAME> --csv <PATH>',
-	)
-	process.exit(1)
+if (jsonIndex === -1 || suiteIndex === -1) {
+  logger.error('Missing required arguments')
+  logger.info('Usage: ts-node scripts/generate-tests.ts --json <PATH> --suite <NAME>')
+  process.exit(1)
 }
 
+const jsonPath: string | undefined = args[jsonIndex + 1]
 const suite = args[suiteIndex + 1]
-const csv = args[csvIndex + 1]
 
-generateTestSpecs(suite, csv).catch((error) => {
-	logger.error(`Failed to generate test specs: ${error.message}`)
-	process.exit(1)
+generateTestSpecs(jsonPath as string, suite).catch((error) => {
+  logger.error(`Failed to generate tests: ${error.message}`)
+  process.exit(1)
 })

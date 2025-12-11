@@ -45,3 +45,8 @@ coverage/
 # Playwright
 playwright/.cache/
 .playwright/
+
+# Test artifacts
+playwright-report/
+test-results/
+analysis/

@@ -137,28 +137,28 @@ jobs:
 
           node explore-website.js
 
-      - name: 🤖 STEP 2 - Generate Test Cases CSV
-        id: generate-csv
+      - name: 🤖 STEP 2 - Generate Test Cases json
+        id: generate-json
         run: |
           echo ""
           echo "================================================"
-          echo "📝 STEP 2: GENERATING TEST CASES CSV"
+          echo "📝 STEP 2: GENERATING TEST CASES json"
           echo "================================================"
 
-          npm run generate:csv -- \
+          npm run generate:json -- \
             --url "${{ env.WEBSITE_URL }}" \
             --suite "${{ steps.normalize.outputs.normalized_name }}"
 
-          if [ -f "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv" ]; then
-            TEST_COUNT=$(tail -n +2 "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv" | wc -l)
+          if [ -f "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" ]; then
+            TEST_COUNT=$(tail -n +2 "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" | wc -l)
             echo ""
             echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ Generated $TEST_COUNT test cases"
             echo ""
             echo "📊 Test Case Breakdown:"
             
-            HAPPY=$(grep -c "Happy Path" "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv" || echo "0")
-            NEGATIVE=$(grep -c "Negative" "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv" || echo "0")
-            EDGE=$(grep -c "Edge Case" "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv" || echo "0")
+            HAPPY=$(grep -c "Happy Path" "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" || echo "0")
+            NEGATIVE=$(grep -c "Negative" "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" || echo "0")
+            EDGE=$(grep -c "Edge Case" "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json" || echo "0")
             
             echo "   - Happy Path: $HAPPY cases"
             echo "   - Negative: $NEGATIVE cases"
@@ -201,7 +201,7 @@ jobs:
 
           npm run generate:tests -- \
             --suite "${{ steps.normalize.outputs.normalized_name }}" \
-            --csv "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.csv"
+            --json "test-suites/${{ steps.normalize.outputs.normalized_name }}-test-cases.json"
 
           TEST_FILES=$(find tests/test-cases -name "*${{ steps.normalize.outputs.normalized_name }}*.spec.ts" 2>/dev/null | wc -l)
           echo ""
@@ -224,7 +224,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "⚠️ No changes to commit"
           else
-            git commit -m "Generate tests for ${{ env.TEST_SUITE_NAME }} - Explored ${{ env.WEBSITE_URL }} - Generated test cases CSV, locators, page objects, and test specs - Run #${{ github.run_number }}"
+            git commit -m "Generate tests for ${{ env.TEST_SUITE_NAME }} - Explored ${{ env.WEBSITE_URL }} - Generated test cases json, locators, page objects, and test specs - Run #${{ github.run_number }}"
             git push
             echo "✓ Files committed and pushed"
           fi
@@ -462,15 +462,15 @@ jobs:
             echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ Report generated: $REPORT_FILE"
           fi
 
-      - name: 📝 STEP 10 - Update CSV with Results
+      - name: 📝 STEP 10 - Update json with Results
         run: |
           echo ""
           echo "================================================"
-          echo "📝 STEP 10: UPDATING TEST CASES CSV"
+          echo "📝 STEP 10: UPDATING TEST CASES json"
           echo "================================================"
 
-          npm run update:csv -- \
-            --csv "test-suites/${{ needs.explore-and-generate.outputs.test-suite-name }}-test-cases.csv" \
+          npm run update:json -- \
+            --json "test-suites/${{ needs.explore-and-generate.outputs.test-suite-name }}-test-cases.json" \
             --results "test-results/results.json"
 
           echo ""
@@ -485,7 +485,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "Update test results for ${{ needs.explore-and-generate.outputs.test-suite-name }} - Updated CSV with Pass/Fail/Flaky - Generated HTML report - Run #${{ github.run_number }}"
+            git commit -m "Update test results for ${{ needs.explore-and-generate.outputs.test-suite-name }} - Updated json with Pass/Fail/Flaky - Generated HTML report - Run #${{ github.run_number }}"
             git push
             echo "✓ Results committed"
           fi
@@ -507,7 +507,7 @@ jobs:
           echo "📋 Summary:"
           echo "   - Test Suite: ${{ needs.explore-and-generate.outputs.test-suite-name }}"
           echo "   - Website: ${{ env.WEBSITE_URL }}"
-          echo "   - CSV: Updated with results"
+          echo "   - json: Updated with results"
           echo "   - Report: Generated"
           echo "   - Analysis: Complete"
           echo ""

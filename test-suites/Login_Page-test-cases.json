@@ -1,0 +1,316 @@
+{
+  "name": "Login_Page",
+  "url": "https://practice.expandtesting.com/login",
+  "description": "Comprehensive test suite for Login Page - Testing authentication, validation, and edge cases",
+  "timestamp": "2025-12-11T13:18:22.626Z",
+  "positiveCases": [
+    {
+      "id": "LG-POS-01",
+      "suite": "Login_Page",
+      "title": "Valid login with correct credentials",
+      "type": "Happy Path",
+      "priority": "High",
+      "preconditions": "Browser open, navigated to login page, valid test account exists",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Fill username field with valid username",
+          "action": "fill",
+          "locator": "#username",
+          "value": "practice"
+        },
+        {
+          "order": 2,
+          "description": "Fill password field with valid password",
+          "action": "fill",
+          "locator": "#password",
+          "value": "SuperSecurePassword!"
+        },
+        {
+          "order": 3,
+          "description": "Click login button",
+          "action": "click",
+          "locator": "#login-button"
+        },
+        {
+          "order": 4,
+          "description": "Verify successful login",
+          "action": "assert_url",
+          "value": "/dashboard"
+        }
+      ],
+      "expectedResult": "User successfully logged in and redirected to dashboard",
+      "testData": {
+        "username": "practice",
+        "password": "SuperSecurePassword!",
+        "expectedUrl": "/dashboard"
+      },
+      "status": "Not Run",
+      "comments": "Happy path: Standard login flow with valid credentials"
+    },
+    {
+      "id": "LG-POS-02",
+      "suite": "Login_Page",
+      "title": "Login instructions are visible",
+      "type": "Happy Path",
+      "priority": "Medium",
+      "preconditions": "Browser open, navigated to login page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Verify instructions heading is visible",
+          "action": "assert_visible",
+          "locator": "h1:has-text('Instructions')"
+        }
+      ],
+      "expectedResult": "Instructions section is displayed on the page",
+      "testData": {},
+      "status": "Not Run",
+      "comments": "Verify page layout and content"
+    }
+  ],
+  "negativeCases": [
+    {
+      "id": "LG-NEG-01",
+      "suite": "Login_Page",
+      "title": "Login with empty username",
+      "type": "Negative",
+      "priority": "High",
+      "preconditions": "Browser open, navigated to login page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Leave username field empty",
+          "action": "wait",
+          "value": "500"
+        },
+        {
+          "order": 2,
+          "description": "Fill password field",
+          "action": "fill",
+          "locator": "#password",
+          "value": "SomePassword"
+        },
+        {
+          "order": 3,
+          "description": "Click login button",
+          "action": "click",
+          "locator": "#login-button"
+        },
+        {
+          "order": 4,
+          "description": "Check for error message",
+          "action": "assert_visible",
+          "locator": "text=Username is required"
+        }
+      ],
+      "expectedResult": "Validation error displayed: 'Username is required'",
+      "testData": {
+        "username": "",
+        "password": "SomePassword"
+      },
+      "status": "Not Run",
+      "comments": "Required field validation"
+    },
+    {
+      "id": "LG-NEG-02",
+      "suite": "Login_Page",
+      "title": "Login with empty password",
+      "type": "Negative",
+      "priority": "High",
+      "preconditions": "Browser open, navigated to login page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Fill username field",
+          "action": "fill",
+          "locator": "#username",
+          "value": "testuser"
+        },
+        {
+          "order": 2,
+          "description": "Leave password field empty",
+          "action": "wait",
+          "value": "500"
+        },
+        {
+          "order": 3,
+          "description": "Click login button",
+          "action": "click",
+          "locator": "#login-button"
+        },
+        {
+          "order": 4,
+          "description": "Check for error message",
+          "action": "assert_visible",
+          "locator": "text=Password is required"
+        }
+      ],
+      "expectedResult": "Validation error displayed: 'Password is required'",
+      "testData": {
+        "username": "testuser",
+        "password": ""
+      },
+      "status": "Not Run",
+      "comments": "Required field validation"
+    },
+    {
+      "id": "LG-NEG-03",
+      "suite": "Login_Page",
+      "title": "Login with wrong credentials",
+      "type": "Negative",
+      "priority": "High",
+      "preconditions": "Browser open, navigated to login page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Fill username with invalid username",
+          "action": "fill",
+          "locator": "#username",
+          "value": "wronguser"
+        },
+        {
+          "order": 2,
+          "description": "Fill password with invalid password",
+          "action": "fill",
+          "locator": "#password",
+          "value": "WrongPassword123"
+        },
+        {
+          "order": 3,
+          "description": "Click login button",
+          "action": "click",
+          "locator": "#login-button"
+        },
+        {
+          "order": 4,
+          "description": "Verify error message appears",
+          "action": "assert_visible",
+          "locator": "text=Invalid credentials"
+        }
+      ],
+      "expectedResult": "Error message displayed: 'Invalid credentials', user remains on login page",
+      "testData": {
+        "username": "wronguser",
+        "password": "WrongPassword123"
+      },
+      "status": "Not Run",
+      "comments": "Authentication validation"
+    }
+  ],
+  "edgeCases": [
+    {
+      "id": "LG-EDGE-01",
+      "suite": "Login_Page",
+      "title": "Login with leading/trailing spaces in username",
+      "type": "Edge Case",
+      "priority": "Medium",
+      "preconditions": "Browser open, navigated to login page, valid account exists",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Fill username with spaces",
+          "action": "fill",
+          "locator": "#username",
+          "value": "  practice  "
+        },
+        {
+          "order": 2,
+          "description": "Fill password field",
+          "action": "fill",
+          "locator": "#password",
+          "value": "SuperSecurePassword!"
+        },
+        {
+          "order": 3,
+          "description": "Click login button",
+          "action": "click",
+          "locator": "#login-button"
+        }
+      ],
+      "expectedResult": "Login succeeds (spaces trimmed) OR error message shown",
+      "testData": {
+        "username": "  practice  ",
+        "password": "SuperSecurePassword!"
+      },
+      "status": "Not Run",
+      "comments": "Test whitespace handling - should be trimmed for better UX"
+    },
+    {
+      "id": "LG-EDGE-02",
+      "suite": "Login_Page",
+      "title": "Login with SQL injection attempt",
+      "type": "Edge Case",
+      "priority": "High",
+      "preconditions": "Browser open, navigated to login page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Fill username with SQL injection payload",
+          "action": "fill",
+          "locator": "#username",
+          "value": "' OR '1'='1"
+        },
+        {
+          "order": 2,
+          "description": "Fill password field",
+          "action": "fill",
+          "locator": "#password",
+          "value": "password"
+        },
+        {
+          "order": 3,
+          "description": "Click login button",
+          "action": "click",
+          "locator": "#login-button"
+        },
+        {
+          "order": 4,
+          "description": "Verify no unauthorized access",
+          "action": "assert_visible",
+          "locator": "text=Invalid credentials"
+        }
+      ],
+      "expectedResult": "Attack payload rejected, invalid credentials error shown",
+      "testData": {
+        "username": "' OR '1'='1",
+        "password": "password",
+        "securityCheck": true
+      },
+      "status": "Not Run",
+      "comments": "Security: SQL injection prevention test"
+    },
+    {
+      "id": "LG-EDGE-03",
+      "suite": "Login_Page",
+      "title": "Login form displays correctly on page load",
+      "type": "Edge Case",
+      "priority": "Medium",
+      "preconditions": "Browser open, navigated to login page",
+      "steps": [
+        {
+          "order": 1,
+          "description": "Verify username input is visible",
+          "action": "assert_visible",
+          "locator": "#username"
+        },
+        {
+          "order": 2,
+          "description": "Verify password input is visible",
+          "action": "assert_visible",
+          "locator": "#password"
+        },
+        {
+          "order": 3,
+          "description": "Verify login button is visible",
+          "action": "assert_visible",
+          "locator": "#login-button"
+        }
+      ],
+      "expectedResult": "All form elements are rendered and visible",
+      "testData": {},
+      "status": "Not Run",
+      "comments": "UI/Layout verification"
+    }
+  ]
+}
