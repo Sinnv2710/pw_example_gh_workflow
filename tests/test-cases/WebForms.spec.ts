@@ -7,11 +7,11 @@ import { WebFormsPage } from '../pages/WebFormsPage';
  * Auto-generated from CSV test cases
  */
 test.describe('WebForms Tests', () => {
-  let webFormsPage: WebFormsPage;
+  let WebFormsPage: WebFormsPage;
 
   test.beforeEach(async ({ page }) => {
-    webFormsPage = new WebFormsPage(page);
-    await webFormsPage.goto();
+    WebFormsPage = new WebFormsPage(page);
+    await WebFormsPage.goto();
   });
 
 
