@@ -35,10 +35,14 @@ export class LocatorHelper {
 
 		if (strategy.dataTestId) {
 			const testIdLocator = this.page.locator(strategy.dataTestId)
-			const count = await testIdLocator.count()
-			if (count > 0) {
-				this.log(`✓ Using data-testid: ${strategy.dataTestId}`)
-				return testIdLocator
+			try {
+				const count = await testIdLocator.count()
+				if (count > 0) {
+					this.log(`✓ Using data-testid: ${strategy.dataTestId}`)
+					return testIdLocator
+				}
+			} catch (error) {
+				this.log(`✗ dataTestId selector failed: ${strategy.dataTestId}`)
 			}
 		}
 
