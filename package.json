@@ -1,19 +1,37 @@
 {
-  "name": "automation",
-  "version": "0.0.1",
-  "description": "Automation testing framework with Playwright and CodeceptJS",
+  "name": "pw-automation-framework",
+  "version": "1.0.0",
+  "description": "Production-ready Playwright test automation framework with centralized locator management",
   "main": "index.js",
   "repository": "",
   "author": "",
   "scripts": {
+    "test": "playwright test",
+    "test:debug": "playwright test --debug",
+    "test:headed": "HEADED=1 playwright test",
+    "test:ui": "playwright test --ui",
+    "test:chromium": "playwright test --project=chromium",
+    "test:smoke": "playwright test test/smoke",
+    "report": "playwright show-report",
+    "report:open": "playwright show-report --host 0.0.0.0 --port 9323",
+    "playwright:install": "playwright install --with-deps chromium",
+    "clean": "rimraf test-results playwright-report screenshots",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,js,json,md}\"",
+    "type-check": "tsc --noEmit",
     "test:playwright": "CI=never bunx playwright test",
     "analyzing": "agent --mode run_analyze"
   },
   "license": "MIT",
   "devDependencies": {
     "@playwright/test": "^1.57.0",
-    "playwright": "^1.17.1",
-    "typescript": "^4.5.4",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
+    "typescript": "^5.3.0",
+    "playwright": "^1.57.0",
     "ts-node": "^10.4.0",
     "eslint": "^8.6.0",
     "eslint-config-google": "^0.14.0",
@@ -21,15 +39,16 @@
     "eslint-plugin-prettier": "^3.3.0",
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.8.1",
-    "@typescript-eslint/parser": "^5.8.1",
     "cross-env": "^7.0.3",
     "allure-commandline": "^2.17.2",
     "@faker-js/faker": "^5.5.3",
     "fs-extra": "^10.0.0",
     "dotenv": "^10.0.0",
-    "moment": "^2.29.1",
-    "@types/node": "^16.18.52"
+    "moment": "^2.29.1"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
 }
