@@ -279,7 +279,7 @@ Run:  #${{ github.run_number }}"
             # Simple result counting using grep
             TOTAL=$(grep -o '"title"' test-results/results.json | wc -l)
             PASSED=$(grep -c '"ok": true' test-results/results.json || echo "0")
-            FAILED=$(grep -c '"ok": false' test-results/results. json || echo "0")
+            FAILED=$(grep -c '"ok": false' test-results/results.json || echo "0")
             
             echo "   Total Tests: $TOTAL"
             echo "   ✓ Passed: $PASSED"
