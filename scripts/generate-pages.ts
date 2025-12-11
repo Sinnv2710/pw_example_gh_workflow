@@ -2,54 +2,54 @@
 
 /**
  * Page Object Generation Script
- * 
+ *
  * Generates Page Object Models that use centralized locators
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { Logger } from './logger';
+import * as fs from 'fs'
+import * as path from 'path'
+import { Logger } from './logger'
 
-const logger = new Logger('Page Generation');
+const logger = new Logger('Page Generation')
 
 /**
  * Generate Page Object file
  */
 async function generatePageObject(suiteName: string): Promise<void> {
-  logger. header('📄 GENERATING PAGE OBJECTS (OOP)');
-  
-  logger.info(`Test Suite: ${suiteName}`);
-  logger.progress('Creating Page Object Model...');
-  
-  // Create pages directory
-  const pagesDir = path.join(process.cwd(), 'tests', 'pages');
-  if (!fs.existsSync(pagesDir)) {
-    fs.mkdirSync(pagesDir, { recursive: true });
-  }
-  
-  // Generate page content
-  const pageContent = generatePageContent(suiteName);
-  const pageName = capitalize(suiteName) + 'Page';
-  const pagePath = path.join(pagesDir, `${pageName}.ts`);
-  
-  fs.writeFileSync(pagePath, pageContent, 'utf-8');
-  
-  logger.success(`Created: tests/pages/${pageName}.ts`);
-  logger.bullet('Uses centralized locators ✓');
-  logger.bullet('Extends BasePage ✓');
-  logger.bullet('OOP pattern ✓');
-  
-  logger.complete(4);
+	logger.header('📄 GENERATING PAGE OBJECTS (OOP)')
+
+	logger.info(`Test Suite: ${suiteName}`)
+	logger.progress('Creating Page Object Model...')
+
+	// Create pages directory
+	const pagesDir = path.join(process.cwd(), 'tests', 'pages')
+	if (!fs.existsSync(pagesDir)) {
+		fs.mkdirSync(pagesDir, { recursive: true })
+	}
+
+	// Generate page content
+	const pageContent = generatePageContent(suiteName)
+	const pageName = capitalize(suiteName) + 'Page'
+	const pagePath = path.join(pagesDir, `${pageName}.ts`)
+
+	fs.writeFileSync(pagePath, pageContent, 'utf-8')
+
+	logger.success(`Created: tests/pages/${pageName}.ts`)
+	logger.bullet('Uses centralized locators ✓')
+	logger.bullet('Extends BasePage ✓')
+	logger.bullet('OOP pattern ✓')
+
+	logger.complete(4)
 }
 
 /**
  * Generate page object content
  */
 function generatePageContent(suiteName: string): string {
-  const className = capitalize(suiteName) + 'Page';
-  const constantName = suiteName.toUpperCase() + '_LOCATORS';
-  
-  return `import { Page, Locator } from '@playwright/test';
+	const className = capitalize(suiteName) + 'Page'
+	const constantName = suiteName.toUpperCase() + '_LOCATORS'
+
+	return `import { Page, Locator } from '@playwright/test';
 import { BasePage } from './BasePage';
 import { ${constantName} } from '../../locators/${suiteName}. locators';
 
@@ -111,29 +111,29 @@ export class ${className} extends BasePage {
     return await this.mainContainer.isVisible();
   }
 }
-`;
+`
 }
 
 /**
  * Capitalize first letter
  */
-function capitalize(str:  string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+function capitalize(str: string): string {
+	return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 // CLI Interface
-const args = process.argv.slice(2);
-const suiteIndex = args.indexOf('--suite');
+const args = process.argv.slice(2)
+const suiteIndex = args.indexOf('--suite')
 
 if (suiteIndex === -1) {
-  logger.error('Missing required argument: --suite');
-  logger.info('Usage: ts-node scripts/generate-pages. ts --suite <NAME>');
-  process.exit(1);
+	logger.error('Missing required argument: --suite')
+	logger.info('Usage: ts-node scripts/generate-pages. ts --suite <NAME>')
+	process.exit(1)
 }
 
-const suite = args[suiteIndex + 1];
+const suite = args[suiteIndex + 1]
 
-generatePageObject(suite).catch(error => {
-  logger.error(`Failed to generate page object: ${error.message}`);
-  process.exit(1);
-});
+generatePageObject(suite).catch((error) => {
+	logger.error(`Failed to generate page object: ${error.message}`)
+	process.exit(1)
+})

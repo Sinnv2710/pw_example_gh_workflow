@@ -2,84 +2,88 @@
 
 /**
  * Report Generation Script
- * 
+ *
  * Generates HTML/PDF test execution report
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import { Logger } from './logger';
+import * as fs from 'fs'
+import * as path from 'path'
+import { Logger } from './logger'
 
-const logger = new Logger('Report Generation');
+const logger = new Logger('Report Generation')
 
 /**
  * Generate test execution report
  */
 async function generateReport(): Promise<void> {
-  logger.header('📊 GENERATING TEST REPORT');
-  
-  logger.progress('Creating HTML report...');
-  
-  const resultsPath = path.join(process.cwd(), 'test-results', 'results.json');
-  
-  if (!fs.existsSync(resultsPath)) {
-    logger.error('Test results not found');
-    return;
-  }
-  
-  const results = JSON.parse(fs.readFileSync(resultsPath, 'utf-8'));
-  
-  // Calculate stats
-  let totalTests = 0;
-  let passed = 0;
-  let failed = 0;
-  
-  results.suites?.forEach((suite: any) => {
-    suite.specs?.forEach((spec: any) => {
-      totalTests++;
-      if (spec.ok) passed++;
-      else failed++;
-    });
-  });
-  
-  const passRate = totalTests > 0 ? ((passed / totalTests) * 100).toFixed(1) : '0';
-  
-  // Generate HTML report
-  const reportDir = path.join(process.cwd(), 'reports');
-  if (!fs.existsSync(reportDir)) {
-    fs.mkdirSync(reportDir, { recursive: true });
-  }
-  
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
-  const reportPath = path.join(reportDir, `test-report-${timestamp}.html`);
-  
-  const htmlContent = generateHTMLReport({
-    totalTests,
-    passed,
-    failed,
-    passRate,
-    timestamp,
-    results
-  });
-  
-  fs.writeFileSync(reportPath, htmlContent, 'utf-8');
-  
-  logger.success(`HTML report generated: ${reportPath}`);
-  
-  logger.section('Report Summary');
-  logger.bullet(`Total Tests: ${totalTests}`);
-  logger.bullet(`✓ Passed: ${passed}`);
-  logger.bullet(`✗ Failed: ${failed}`);
-  logger.bullet(`Success Rate: ${passRate}%`);
-  
-  logger.complete(9);
+	logger.header('📊 GENERATING TEST REPORT')
+
+	logger.progress('Creating HTML report...')
+
+	const resultsPath = path.join(process.cwd(), 'test-results', 'results.json')
+
+	if (!fs.existsSync(resultsPath)) {
+		logger.error('Test results not found')
+		return
+	}
+
+	const results = JSON.parse(fs.readFileSync(resultsPath, 'utf-8'))
+
+	// Calculate stats
+	let totalTests = 0
+	let passed = 0
+	let failed = 0
+
+	results.suites?.forEach((suite: any) => {
+		suite.specs?.forEach((spec: any) => {
+			totalTests++
+			if (spec.ok) passed++
+			else failed++
+		})
+	})
+
+	const passRate =
+		totalTests > 0 ? ((passed / totalTests) * 100).toFixed(1) : '0'
+
+	// Generate HTML report
+	const reportDir = path.join(process.cwd(), 'reports')
+	if (!fs.existsSync(reportDir)) {
+		fs.mkdirSync(reportDir, { recursive: true })
+	}
+
+	const timestamp = new Date()
+		.toISOString()
+		.replace(/[:.]/g, '-')
+		.substring(0, 19)
+	const reportPath = path.join(reportDir, `test-report-${timestamp}.html`)
+
+	const htmlContent = generateHTMLReport({
+		totalTests,
+		passed,
+		failed,
+		passRate,
+		timestamp,
+		results,
+	})
+
+	fs.writeFileSync(reportPath, htmlContent, 'utf-8')
+
+	logger.success(`HTML report generated: ${reportPath}`)
+
+	logger.section('Report Summary')
+	logger.bullet(`Total Tests: ${totalTests}`)
+	logger.bullet(`✓ Passed: ${passed}`)
+	logger.bullet(`✗ Failed: ${failed}`)
+	logger.bullet(`Success Rate: ${passRate}%`)
+
+	logger.complete(9)
 }
 
 /**
  * Generate HTML report content
  */
 function generateHTMLReport(data: any): string {
-  return `<!DOCTYPE html>
+	return `<!DOCTYPE html>
 <html>
 <head>
   <title>Test Execution Report</title>
@@ -138,35 +142,35 @@ function generateHTMLReport(data: any): string {
     </tbody>
   </table>
 </body>
-</html>`;
+</html>`
 }
 
 /**
  * Generate table rows for tests
  */
 function generateTestRows(results: any): string {
-  let rows = '';
-  
-  results.suites?.forEach((suite: any) => {
-    suite.specs?.forEach((spec: any) => {
-      const status = spec.ok ? 'PASS' : 'FAIL';
-      const statusClass = spec.ok ? 'status-pass' : 'status-fail';
-      const duration = spec.tests[0]?.results[0]?.duration || 0;
-      
-      rows += `
+	let rows = ''
+
+	results.suites?.forEach((suite: any) => {
+		suite.specs?.forEach((spec: any) => {
+			const status = spec.ok ? 'PASS' : 'FAIL'
+			const statusClass = spec.ok ? 'status-pass' : 'status-fail'
+			const duration = spec.tests[0]?.results[0]?.duration || 0
+
+			rows += `
       <tr>
         <td>${spec.title}</td>
         <td class="${statusClass}">${status}</td>
         <td>${(duration / 1000).toFixed(2)}s</td>
-      </tr>`;
-    });
-  });
-  
-  return rows;
+      </tr>`
+		})
+	})
+
+	return rows
 }
 
 // Execute
-generateReport().catch(error => {
-  logger.error(`Failed to generate report: ${error.message}`);
-  process.exit(1);
-});
+generateReport().catch((error) => {
+	logger.error(`Failed to generate report: ${error.message}`)
+	process.exit(1)
+})
