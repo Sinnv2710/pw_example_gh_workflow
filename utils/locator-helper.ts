@@ -47,7 +47,14 @@ export class LocatorHelper {
       return this.page.locator(strategy.fallback);
     }
 
-    return primaryLocator;
+    // No selectors matched any elements; throw an error for clarity
+    throw new Error(
+      `LocatorHelper: No elements found for any selector. ` +
+      `Primary: "${strategy.primary}"` +
+      (strategy.dataTestId ? `, dataTestId: "${strategy.dataTestId}"` : '') +
+      (strategy.fallback ? `, fallback: "${strategy.fallback}"` : '') +
+      (strategy.xpath ? `, xpath: "${strategy.xpath}"` : '')
+    );
   }
 
   /**
