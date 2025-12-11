@@ -12,7 +12,8 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   // Test directory - supports both new structure and backward compatibility
-  testDir: './test',
+  testDir: './',
+  testMatch: ['**/test/**/*.spec.ts', '**/tests/**/*.spec.ts'],
   
   // Timeout configuration
   timeout: 30 * 1000, // 30 seconds for test timeout
