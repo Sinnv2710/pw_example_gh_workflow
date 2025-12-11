@@ -4,3 +4,4 @@
  */
 export { BASE_LOCATORS } from './base.locators'
 // Additional page locators will be exported here as they're generated
+export { WEBFORMS GRID OVERVIEW_LOCATORS } from './WebForms Grid Overview.locators';

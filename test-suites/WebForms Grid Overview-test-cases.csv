@@ -1,0 +1,13 @@
+Test ID,Test Suite,Test Case Title,Test Type,Priority,Preconditions,Test Steps,Expected Result,Test Data,Status,Execution Time,Flaky Count,Comments
+TC-001,WebForms Grid Overview,Valid user flow - Happy path,Happy Path,High,"User account exists, Browser open","1.Navigate to homepage
+2.Enter valid credentials
+3.Click submit
+4.Verify success",User successfully completes the flow,"username: test@example.com, password: Test123!",Not Run,,0,
+TC-002,WebForms Grid Overview,Invalid input - Error handling,Negative,High,Browser open,"1.Navigate to homepage
+2.Enter invalid data
+3.Click submit
+4.Verify error message",Error message displayed: Invalid input,username: invalid,Not Run,,0,
+TC-003,WebForms Grid Overview,Empty input fields,Edge Case,Medium,Browser open,"1.Navigate to homepage
+2.Leave all fields empty
+3.Click submit
+4.Verify validation",Validation error: Required fields empty,,Not Run,,0,
